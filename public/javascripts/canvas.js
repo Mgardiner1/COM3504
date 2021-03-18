@@ -4,6 +4,7 @@
 let room;
 let userId;
 let color = 'red', thickness = 4;
+//let chat= io.connect('/chat');
 
 /**
  * it inits the image canvas to draw on. It sets up the events to respond to (click, mouse on, etc.)
@@ -19,6 +20,7 @@ function initCanvas(sckt, imageUrl) {
     let cvx = document.getElementById('canvas');
     let img = document.getElementById('image');
     let ctx = cvx.getContext('2d');
+    //img.src = 'data:image/jpeg;base64,' + img.buffer;
     img.src = imageUrl;
 
     // event on the canvas when the mouse is on it
@@ -38,7 +40,13 @@ function initCanvas(sckt, imageUrl) {
             if (flag) {
                 drawOnCanvas(ctx, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness);
                 // @todo if you draw on the canvas, you may want to let everyone know via socket.io (socket.emit...)  by sending them
+
+                /*
+                socket.emit("image", {image: true, room: room, userId: userId, width: canvas.width, height: canvas.height,
+                    prevX: prevX, prevY: prevY, currX: currX, currY: currY, color: color, thickness: thickness});
+                */
                 // room, userId, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness
+
             }
         }
     });
@@ -53,6 +61,13 @@ function initCanvas(sckt, imageUrl) {
     });
 
     // @todo here you want to capture the event on the socket when someone else is drawing on their canvas (socket.on...)
+    /*
+    socket.on("image", function(info) {
+        if (info.image) {
+            drawOnCanvas(ctx, info.width, info.height, info.prevX, info.prevY, info.currX, info.currY, info.color, info.thickness);
+        }
+    });*/
+
     // I suggest that you receive userId, canvasWidth, canvasHeight, x1, y21, x2, y2, color, thickness
     // and then you call
     //     let ctx = canvas[0].getContext('2d');

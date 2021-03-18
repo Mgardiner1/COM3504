@@ -81,9 +81,6 @@ function hideLoginInterface(room, userId) {
     document.getElementById('in_room').innerHTML= ' '+room;
 }
 
-/////////////////////////////////////////////////////////////////
-
-
 /**
  * it initialises the socket for /chat
  */
@@ -106,6 +103,9 @@ function initChatSocket() {
     });
 
 }
+
+/////////////////////////////////////////////////////////////////
+
 /**
  * it appends the given html text to the history div
  * @param text: teh text to append
@@ -117,7 +117,6 @@ function writeOnChatHistory(text) {
     paragraph.innerHTML = text;
     history.appendChild(paragraph);
     document.getElementById('chat_input').value = ''
-
 }
  */
 
