@@ -12,7 +12,7 @@ let color = 'red', thickness = 4;
  * @param sckt the open socket to register events on
  * @param imageUrl teh image url to download
  */
-function initCanvas(sckt, imageUrl) {
+async function initCanvas(sckt, imageUrl) {
     socket = sckt;
     let flag = false,
         prevX, prevY, currX, currY = 0;
@@ -52,7 +52,7 @@ function initCanvas(sckt, imageUrl) {
     });
 
     // this is code left in case you need to  provide a button clearing the canvas (it is suggested that you implement it)
-    $('.canvas-clear').on('click', function (e) {
+    $('.canvas-clear').on('click', function () {
         let c_width = canvas.width();
         let c_height = canvas.height();
         ctx.clearRect(0, 0, c_width, c_height);
@@ -78,27 +78,7 @@ function initCanvas(sckt, imageUrl) {
     img.addEventListener('load', () => {
         // it takes time before the image size is computed and made available
         // here we wait until the height is set, then we resize the canvas based on the size of the image
-        let poll = setInterval(function () {
-            if (img.naturalHeight) {
-                clearInterval(poll);
-                // resize the canvas
-                let ratioX=1;
-                let ratioY=1;
-                // if the screen is smaller than the img size we have to reduce the image to fit
-                if (img.clientWidth>window.innerWidth)
-                    ratioX=window.innerWidth/img.clientWidth;
-                if (img.clientHeight> window.innerHeight)
-                    ratioY= img.clientHeight/window.innerHeight;
-                let ratio= Math.min(ratioX, ratioY);
-                // resize the canvas to fit the screen and the image
-                cvx.width = canvas.width = img.clientWidth*ratio;
-                cvx.height = canvas.height = img.clientHeight*ratio;
-                // draw the image onto the canvas
-                drawImageScaled(img, cvx, ctx);
-                // hide the image element as it is not needed
-                img.style.display = 'none';
-            }
-        }, 10);
+        imgResize(img, cvx, ctx, canvas);
     });
 }
 
@@ -109,7 +89,7 @@ function initCanvas(sckt, imageUrl) {
  * @param canvas
  * @param ctx
  */
-function drawImageScaled(img, canvas, ctx) {
+async function drawImageScaled(img, canvas, ctx) {
     // get the scale
     let scale = Math.min(canvas.width / img.width, canvas.height / img.height);
     // get the top left position of the image
@@ -136,8 +116,9 @@ function drawImageScaled(img, canvas, ctx) {
  * @param color of the line
  * @param thickness of the line
  */
-function drawOnCanvas(ctx, canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness) {
+async function drawOnCanvas(ctx, canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness) {
     //get the ration between the current canvas and the one it has been used to draw on the other comuter
+    let canvas = $('#canvas')
     let ratioX= canvas.width/canvasWidth;
     let ratioY= canvas.height/canvasHeight;
     // update the value of the points to draw
@@ -152,4 +133,24 @@ function drawOnCanvas(ctx, canvasWidth, canvasHeight, prevX, prevY, currX, currY
     ctx.lineWidth = thickness;
     ctx.stroke();
     ctx.closePath();
+}
+
+async function imgResize(img, cvx, ctx, canvas) {
+    // resize the canvas
+    let ratioX=1;
+    let ratioY=1;
+    // if the screen is smaller than the img size we have to reduce the image to fit
+    if (img.clientWidth>window.innerWidth)
+        ratioX=window.innerWidth/img.clientWidth;
+    if (img.clientHeight> window.innerHeight)
+        ratioY= img.clientHeight/window.innerHeight;
+    console.log(img.clientHeight, img.clientWidth);
+    let ratio= Math.min(ratioX, ratioY);
+    // resize the canvas to fit the screen and the image
+    cvx.width = canvas.width = img.clientWidth*ratio;
+    cvx.height = canvas.height = img.clientHeight*ratio;
+    // draw the image onto the canvas
+    drawImageScaled(img, cvx, ctx);
+    // hide the image element as it is not needed
+    img.style.display = 'none';
 }
