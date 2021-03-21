@@ -12,7 +12,7 @@ let color = 'red', thickness = 4;
  * @param sckt the open socket to register events on
  * @param imageUrl teh image url to download
  */
-async function initCanvas(sckt, imageUrl) {
+function initCanvas(sckt, imageUrl) {
     socket = sckt;
     let flag = false,
         prevX, prevY, currX, currY = 0;
@@ -20,7 +20,6 @@ async function initCanvas(sckt, imageUrl) {
     let cvx = document.getElementById('canvas');
     let img = document.getElementById('image');
     let ctx = cvx.getContext('2d');
-    //img.src = 'data:image/jpeg;base64,' + img.buffer;
     img.src = imageUrl;
 
     // event on the canvas when the mouse is on it
@@ -40,19 +39,13 @@ async function initCanvas(sckt, imageUrl) {
             if (flag) {
                 drawOnCanvas(ctx, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness);
                 // @todo if you draw on the canvas, you may want to let everyone know via socket.io (socket.emit...)  by sending them
-
-                /*
-                socket.emit("image", {image: true, room: room, userId: userId, width: canvas.width, height: canvas.height,
-                    prevX: prevX, prevY: prevY, currX: currX, currY: currY, color: color, thickness: thickness});
-                */
                 // room, userId, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness
-
             }
         }
     });
 
     // this is code left in case you need to  provide a button clearing the canvas (it is suggested that you implement it)
-    $('.canvas-clear').on('click', function () {
+    $('.canvas-clear').on('click', function (e) {
         let c_width = canvas.width();
         let c_height = canvas.height();
         ctx.clearRect(0, 0, c_width, c_height);
@@ -61,13 +54,6 @@ async function initCanvas(sckt, imageUrl) {
     });
 
     // @todo here you want to capture the event on the socket when someone else is drawing on their canvas (socket.on...)
-    /*
-    socket.on("image", function(info) {
-        if (info.image) {
-            drawOnCanvas(ctx, info.width, info.height, info.prevX, info.prevY, info.currX, info.currY, info.color, info.thickness);
-        }
-    });*/
-
     // I suggest that you receive userId, canvasWidth, canvasHeight, x1, y21, x2, y2, color, thickness
     // and then you call
     //     let ctx = canvas[0].getContext('2d');
@@ -78,7 +64,27 @@ async function initCanvas(sckt, imageUrl) {
     img.addEventListener('load', () => {
         // it takes time before the image size is computed and made available
         // here we wait until the height is set, then we resize the canvas based on the size of the image
-        imgResize(img, cvx, ctx, canvas);
+        let poll = setInterval(function () {
+            if (img.naturalHeight) {
+                clearInterval(poll);
+                // resize the canvas
+                let ratioX=1;
+                let ratioY=1;
+                // if the screen is smaller than the img size we have to reduce the image to fit
+                if (img.clientWidth>window.innerWidth)
+                    ratioX=window.innerWidth/img.clientWidth;
+                if (img.clientHeight> window.innerHeight)
+                    ratioY= img.clientHeight/window.innerHeight;
+                let ratio= Math.min(ratioX, ratioY);
+                // resize the canvas to fit the screen and the image
+                cvx.width = canvas.width = img.clientWidth*ratio;
+                cvx.height = canvas.height = img.clientHeight*ratio;
+                // draw the image onto the canvas
+                drawImageScaled(img, cvx, ctx);
+                // hide the image element as it is not needed
+                img.style.display = 'none';
+            }
+        }, 10);
     });
 }
 
@@ -89,7 +95,7 @@ async function initCanvas(sckt, imageUrl) {
  * @param canvas
  * @param ctx
  */
-async function drawImageScaled(img, canvas, ctx) {
+function drawImageScaled(img, canvas, ctx) {
     // get the scale
     let scale = Math.min(canvas.width / img.width, canvas.height / img.height);
     // get the top left position of the image
@@ -116,9 +122,8 @@ async function drawImageScaled(img, canvas, ctx) {
  * @param color of the line
  * @param thickness of the line
  */
-async function drawOnCanvas(ctx, canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness) {
+function drawOnCanvas(ctx, canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness) {
     //get the ration between the current canvas and the one it has been used to draw on the other comuter
-    let canvas = $('#canvas')
     let ratioX= canvas.width/canvasWidth;
     let ratioY= canvas.height/canvasHeight;
     // update the value of the points to draw
@@ -134,7 +139,7 @@ async function drawOnCanvas(ctx, canvasWidth, canvasHeight, prevX, prevY, currX,
     ctx.stroke();
     ctx.closePath();
 }
-
+/*
 async function imgResize(img, cvx, ctx, canvas) {
     // resize the canvas
     let ratioX=1;
@@ -150,7 +155,7 @@ async function imgResize(img, cvx, ctx, canvas) {
     cvx.width = canvas.width = img.clientWidth*ratio;
     cvx.height = canvas.height = img.clientHeight*ratio;
     // draw the image onto the canvas
-    drawImageScaled(img, cvx, ctx);
+    await drawImageScaled(img, cvx, ctx);
     // hide the image element as it is not needed
     img.style.display = 'none';
-}
+}*/
