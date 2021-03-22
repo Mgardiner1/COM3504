@@ -7,6 +7,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="/javascripts/index.js"></script>
     <script src="/javascripts/canvas.js"></script>
+    <script src="/javascripts/photos.js"></script>
 </head>
 <body onload="init()">
 <div id="initial_form" style="display: block">
@@ -24,6 +25,8 @@
         <p style=" width: 100%"><label for="image_url"> Image (URL) </label><input type="text" id="image_url" name="image_url"></p>
         <button id="connect" onclick="connectToRoom()">Connect</button>
     </form>
+    <button id="takePhoto" onclick="prepareVideo(0)">Take Photo</button>
+    <video id='video' autoplay></video>
 </div>
 <div id="chat_interface" style="display: none">
     <div>
