@@ -25,8 +25,11 @@
         <p style=" width: 100%"><label for="image_url"> Image (URL) </label><input type="text" id="image_url" name="image_url"></p>
         <button id="connect" onclick="connectToRoom()">Connect</button>
     </form>
-    <button id="takePhoto" onclick="prepareVideo(0)">Take Photo</button>
+</div>
+<div id="photoCapture">
+    <button id="takePhoto" onclick="selectCamera()">Take Photo</button>
     <video id='video' autoplay></video>
+    <select id="chooseCamera" onload="selectCamera()"></select>
 </div>
 <div id="chat_interface" style="display: none">
     <div>
