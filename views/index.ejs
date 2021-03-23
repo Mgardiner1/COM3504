@@ -27,9 +27,14 @@
     </form>
 </div>
 <div id="photoCapture">
-    <button id="takePhoto" onclick="selectCamera()">Take Photo</button>
+    <button id="takePhoto">Take Photo</button>
     <video id='video' autoplay></video>
-    <select id="chooseCamera" onload="selectCamera()"></select>
+    <img src="">
+    <canvas id="streamCanvas" style="display:none;"></canvas>
+    <div id='cameraSelect'>
+        <select id="cameraOptions" onload="selectCamera()"></select>
+        <button id="sourceSelect" onclick="sourceSelect()">Start Camera</button>
+    </div>
 </div>
 <div id="chat_interface" style="display: none">
     <div>

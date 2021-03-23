@@ -12,12 +12,13 @@ function init() {
     // it sets up the interface so that userId and room are selected
     document.getElementById('initial_form').style.display = 'block';
     document.getElementById('chat_interface').style.display = 'none';
-
+    document.getElementById('takePhoto').style.display = 'none';
     // set up webcam interface list
     selectCamera();
 
     //@todo here is where you should initialise the socket operations as described in teh lectures (room joining, chat message receipt etc.)
     initChatSocket();
+    initStreamCanvas();
 }
 
 /**
@@ -79,6 +80,7 @@ function writeOnHistory(text) {
  */
 function hideLoginInterface(room, userId) {
     document.getElementById('initial_form').style.display = 'none';
+    document.getElementById('photoCapture').style.display = 'none';
     document.getElementById('chat_interface').style.display = 'block';
     document.getElementById('who_you_are').innerHTML= userId;
     document.getElementById('in_room').innerHTML= ' '+room;
