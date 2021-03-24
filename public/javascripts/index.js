@@ -53,7 +53,7 @@ function connectToRoom() {
     //@todo join the room
     chat.emit('create or join', roomNo, name);
 
-    initCanvas(socket, imageUrl);
+    initCanvas(chat, imageUrl);
     hideLoginInterface(roomNo, name);
 }
 

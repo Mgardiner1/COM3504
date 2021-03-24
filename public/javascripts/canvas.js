@@ -40,6 +40,10 @@ function initCanvas(sckt, imageUrl) {
                 drawOnCanvas(ctx, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness);
                 // @todo if you draw on the canvas, you may want to let everyone know via socket.io (socket.emit...)  by sending them
                 // room, userId, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness
+                console.log(width);
+                console.log('value')
+                chat.emit('pic', ctx, room, userId, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness);
+
             }
         }
     });
@@ -50,10 +54,14 @@ function initCanvas(sckt, imageUrl) {
         let c_height = canvas.height();
         ctx.clearRect(0, 0, c_width, c_height);
         // @todo if you clear the canvas, you want to let everyone know via socket.io (socket.emit...)
-
     });
 
     // @todo here you want to capture the event on the socket when someone else is drawing on their canvas (socket.on...)
+    chat.on('pic', function (ctx, room, userId, width, height, x1, y1, x2, y2, color, thickness) {
+        //let ctx = canvas[0].getContext('2d');
+        console.log(width);
+        drawOnCanvas(ctx, width, height, x1, y1, x2, y2, color, thickness)
+    });
     // I suggest that you receive userId, canvasWidth, canvasHeight, x1, y21, x2, y2, color, thickness
     // and then you call
     //     let ctx = canvas[0].getContext('2d');
