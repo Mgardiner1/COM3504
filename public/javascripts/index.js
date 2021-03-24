@@ -19,7 +19,15 @@ function init() {
     //@todo here is where you should initialise the socket operations as described in teh lectures (room joining, chat message receipt etc.)
     initChatSocket();
     // initStreamCanvas();
+
+    if ('indexedDB' in window) {
+        initDatabase();
+    }
+    else {
+        console.log('This browser doesn\'t support IndexedDB');
+    }
 }
+
 
 /**
  * called to generate a random room number
@@ -52,7 +60,6 @@ function connectToRoom() {
     if (!name) name = 'Unknown-' + Math.random();
     //@todo join the room
     chat.emit('create or join', roomNo, name);
-
     initCanvas(chat, imageUrl);
     hideLoginInterface(roomNo, name);
 }
@@ -125,4 +132,11 @@ function writeOnChatHistory(text) {
 }
  */
 
+class Room{
+    constructor (image, chatHistory, annotations) {
+        this.image= image;
+        this.chatHistory= chatHistory,
+        this.annotations= annotations;
+    }
+}
 

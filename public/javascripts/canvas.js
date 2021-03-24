@@ -21,6 +21,8 @@ function initCanvas(sckt, imageUrl) {
     let img = document.getElementById('image');
     let ctx = cvx.getContext('2d');
     img.src = imageUrl;
+    let imageBase = cvx.toDataURL();
+    addData({'image': imageBase, 'room': document.getElementById('roomNo').value, 'annotations': [], 'chat': []});
 
     // event on the canvas when the mouse is on it
     canvas.on('mousemove mousedown mouseup mouseout', function (e) {
@@ -37,10 +39,10 @@ function initCanvas(sckt, imageUrl) {
         // if the flag is up, the movement of the mouse draws on the canvas
         if (e.type === 'mousemove') {
             if (flag) {
-                drawOnCanvas(ctx, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness);
+                drawOnCanvas(imageBase, ctx, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness);
                 // @todo if you draw on the canvas, you may want to let everyone know via socket.io (socket.emit...)  by sending them
                 // room, userId, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness
-                console.log(width);
+                //console.log(width);
                 console.log('value')
                 chat.emit('pic', ctx, room, userId, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness);
 
@@ -60,7 +62,7 @@ function initCanvas(sckt, imageUrl) {
     chat.on('pic', function (ctx, room, userId, width, height, x1, y1, x2, y2, color, thickness) {
         //let ctx = canvas[0].getContext('2d');
         console.log(width);
-        drawOnCanvas(ctx, width, height, x1, y1, x2, y2, color, thickness)
+        drawOnCanvas(imageBase, ctx, width, height, x1, y1, x2, y2, color, thickness)
     });
     // I suggest that you receive userId, canvasWidth, canvasHeight, x1, y21, x2, y2, color, thickness
     // and then you call
@@ -130,7 +132,7 @@ function drawImageScaled(img, canvas, ctx) {
  * @param color of the line
  * @param thickness of the line
  */
-function drawOnCanvas(ctx, canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness) {
+function drawOnCanvas(image, ctx, canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness) {
     //get the ration between the current canvas and the one it has been used to draw on the other comuter
     let ratioX= canvas.width/canvasWidth;
     let ratioY= canvas.height/canvasHeight;
@@ -146,6 +148,10 @@ function drawOnCanvas(ctx, canvasWidth, canvasHeight, prevX, prevY, currX, currY
     ctx.lineWidth = thickness;
     ctx.stroke();
     ctx.closePath();
+    console.log("NOW");
+    let data = [canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness]
+    storeOther('annotations', data, image, document.getElementById('roomNo'));
+
 }
 /*
 async function imgResize(img, cvx, ctx, canvas) {
