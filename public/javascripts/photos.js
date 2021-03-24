@@ -1,7 +1,9 @@
-function prepareVideo(camid) {
+async function prepareVideo(camid) {
     var session = {
         audio: false,
         video: {
+            width: 720,
+            height: 480,
             // check if there is a camera
             deviceId: camid ? {exact: camid} : true,
             facingMode: 'environment',
@@ -20,11 +22,29 @@ function prepareVideo(camid) {
 }
 
 function gotStream(stream) {
-    let mediaElement = document.getElementById('video');mediaElement.srcObject = stream;
+    console.log(stream);
+    let mediaElement = document.getElementById('video');
+    mediaElement.srcObject = stream;
+    var button = document.getElementById('takePhoto');
+    button.addEventListener('click', snapshot, false);
+    var canvas = document.getElementById('streamCanvas');
+    canvas.height = 720;
+    canvas.width = 480;
+    var ctx = canvas.getContext('2d');
+    function snapshot() {
+        alert("button clicked!");
+        let screenShotScale = Math.min(canvas.width / 720, canvas.height / 480);
+        // get the top left position of the image
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let x = (canvas.width / 2) - (720 / 2) * screenShotScale;
+        let y = (canvas.height / 2) - (480 / 2) * screenShotScale;
+        ctx.drawImage(mediaElement, x, y, 720 * screenShotScale, 480 * screenShotScale);
+        document.querySelector('img').src = canvas.toDataURL('image/png');
+    }
 }
 
 
-function selectCamera() {
+async function selectCamera() {
     cameraNames=[];
     cameras = [];
     function getSources(sourceInfos) {
@@ -46,29 +66,26 @@ function selectCamera() {
         .then(getSources);
 }
 
-function sourceSelect() {
+async function sourceSelect() {
     let sourceList = document.getElementById("cameraOptions");
     let source = sourceList.options[sourceList.selectedIndex].value;
-    prepareVideo(source);
+    await prepareVideo(source);
     document.getElementById('cameraSelect').style.display = 'none';
     document.getElementById('takePhoto').style.display = 'block';
 }
-function initStreamCanvas() {
+/*
+async function initStreamCanvas() {
     var button = document.getElementById('takePhoto');
     var video = document.querySelector('video');
     var canvas = document.getElementById('streamCanvas');
+    canvas.height = 600;
+    canvas.width = 600;
     var ctx = canvas.getContext('2d');
-    var localMediaStream = null;
+    console.log(ctx.canvas.width);
     button.addEventListener('click', snapshot, false);
-    navigator.mediaDevices.getUserMedia({video: true}, function(stream) {
-        video.src = window.URL.createObjectURL(stream);
-        localMediaStream = stream;
-    }, /* @todo errorCallback*/);
-
     function snapshot() {
-        if (localMediaStream) {
-            ctx.drawImage(video, 0, 0);
-            document.querySelector('img').src = canvas.toDataURL('image/png');
-        }
+        ctx.drawImage(video, 0, 0);
+        document.querySelector('img').src = canvas.toDataURL('image/png');
     }
 }
+*/
