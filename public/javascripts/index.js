@@ -18,7 +18,7 @@ function init() {
 
     //@todo here is where you should initialise the socket operations as described in teh lectures (room joining, chat message receipt etc.)
     initChatSocket();
-    initStreamCanvas();
+    // initStreamCanvas();
 }
 
 /**
