@@ -78,6 +78,9 @@ function writeOnHistory(text) {
     // scroll to the last element
     history.scrollTop = history.scrollHeight;
     document.getElementById('chat_input').value = '';
+
+    storeOther('chat', text, imageBase, document.getElementById('roomNo'));
+
 }
 
 /**
@@ -132,11 +135,4 @@ function writeOnChatHistory(text) {
 }
  */
 
-class Room{
-    constructor (image, chatHistory, annotations) {
-        this.image= image;
-        this.chatHistory= chatHistory,
-        this.annotations= annotations;
-    }
-}
 

@@ -29,9 +29,9 @@ async function initDatabase(){
 
 window.initDatabase= initDatabase;
 /**
- * it saves the forecasts for a city in localStorage
- * @param city
- * @param forecastObject
+ * Add image and room data to index db the first time a room/image combination is used
+ * @param data Object containing image in base64 format, room number and empty arrays for
+ *              annotations and chat.
  */
 async function addData(data) {
     console.log('Store Image: '+JSON.stringify(data));
@@ -52,13 +52,20 @@ async function addData(data) {
 
         } catch(error) {
             console.log(error)
-            //localStorage.setItem(JSON.stringify(data));
+            localStorage.setItem(data.image + "-"+data.room, JSON.stringify(data));
         };
     }
-    //else localStorage.setItem(JSON.stringify(data));
+    else localStorage.setItem(data.image + "-"+data.room, JSON.stringify(data));
 }
 window.addData= addData
 
+/**
+ * Add annotations/chat messages to IndexedDB
+ * @param name Either annotations or char
+ * @param data The data to be added to the IndexedDb record
+ * @param image The image being used in the chat room
+ * @param room The room number
+ */
 async function storeOther(name, data, image, room) {
     if (!db)
         await initDatabase();
@@ -69,28 +76,34 @@ async function storeOther(name, data, image, room) {
 
             let obj = await search(name, image, room, store);
             if(obj){
-                obj.annotations.push(data);
+                if(name === 'annotations') {
+                    obj.annotations.push(data);
+                }
+                else{
+                    obj.chat.push(data);
+                }
                 await store.put(obj);
             }
             await tx.done;
 
         } catch(error) {
             console.log(error);
-            //localStorage.setItem(JSON.stringify(data));
+            localStorage.setItem(data.image + "-"+data.room, JSON.stringify(data));
         };
     }
-   // else localStorage.setItem(JSON.stringify(data));
+    else localStorage.setItem(data.image + "-"+data.room, JSON.stringify(data));
 }
 window.storeOther= storeOther
 
 
 /**
- * it retrieves the forecasts data for a city from the database
- * @param city
- * @param date
- * @returns {*}
+ * Search to see if a particular image/room combination exists within IndexedDb
+ * @param name Name of the index being used to search
+ * @param image Image to find within the IndexedDB
+ * @param Room to find within the IndexedDB
+ * @returns {*} If the specified record exists in the database, the record will be returned. Returns
+ *              false if the record is not found
  */
-
 async function search(name, image, room, store) {
     if (!db)
         await initDatabase();
@@ -110,7 +123,6 @@ async function search(name, image, room, store) {
 
         } catch(error) {
             console.log(error);
-            //localStorage.setItem(JSON.stringify(data));
         };
     }
 

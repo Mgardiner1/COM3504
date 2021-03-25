@@ -4,6 +4,7 @@
 let room;
 let userId;
 let color = 'red', thickness = 4;
+let imageBase;
 //let chat= io.connect('/chat');
 
 /**
@@ -21,7 +22,7 @@ function initCanvas(sckt, imageUrl) {
     let img = document.getElementById('image');
     let ctx = cvx.getContext('2d');
     img.src = imageUrl;
-    let imageBase = cvx.toDataURL();
+    imageBase = cvx.toDataURL();
     addData({'image': imageBase, 'room': document.getElementById('roomNo').value, 'annotations': [], 'chat': []});
 
     // event on the canvas when the mouse is on it
