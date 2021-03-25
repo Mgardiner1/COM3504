@@ -5,6 +5,7 @@ let room;
 let userId;
 let color = 'red', thickness = 4;
 let imageBase;
+let ctx;
 //let chat= io.connect('/chat');
 
 /**
@@ -20,7 +21,7 @@ function initCanvas(sckt, imageUrl) {
     let canvas = $('#canvas');
     let cvx = document.getElementById('canvas');
     let img = document.getElementById('image');
-    let ctx = cvx.getContext('2d');
+    ctx = cvx.getContext('2d');
     img.src = imageUrl;
     imageBase = cvx.toDataURL();
     addData({'image': imageBase, 'room': document.getElementById('roomNo').value, 'annotations': [], 'chat': []});

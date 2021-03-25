@@ -42,13 +42,32 @@ async function addData(data) {
             let tx = await db.transaction(STORE_NAME, 'readwrite');
             let store = await tx.objectStore(STORE_NAME);
             let obj = await search('image', data.image, data.room, store);
-            console.log(obj);
+
+
+            console.log(obj.id);
+
             if(!obj){
                 await store.put(data);
-                console.log('added item to the store! '+ JSON.stringify(data));
+            }
+            if(obj){
+                store.delete(obj.id);
+                let annotations = obj.annotations;
+                let chat = obj.chat;
+
+                await store.put(data);
+                console.log(annotations);
+                for(let i = 0; i < annotations.length; i++){
+                    drawOnCanvas(imageBase, ctx, annotations[i][0], annotations[i][1], annotations[i][2], annotations[i][3], annotations[i][4], annotations[i][5], annotations[i][6], annotations[i][7]);
+                }
+                for(let i = 0; i < chat.length; i++){
+                    writeOnHistory(chat[i]);
+                }
+
+                await  tx.done;
             }
 
-            await  tx.done;
+
+
 
         } catch(error) {
             console.log(error)
@@ -74,7 +93,7 @@ async function storeOther(name, data, image, room) {
             let tx = await db.transaction(STORE_NAME, 'readwrite');
             let store = await tx.objectStore(STORE_NAME);
 
-            let obj = await search(name, image, room, store);
+            let obj = await search(name, image, room.value, store);
             if(obj){
                 if(name === 'annotations') {
                     obj.annotations.push(data);
@@ -111,10 +130,10 @@ async function search(name, image, room, store) {
         try{
             let index = await store.index(name);
             let readingsList = await index.getAll();
-
             let obj;
+
             for (let elem of readingsList) {
-                if (elem.image === image && elem.room === room.value){
+                if (elem.image === image && elem.room === room){
                     return(elem);
                 }
             }
