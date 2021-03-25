@@ -41,9 +41,15 @@ async function addData(data) {
         try{
             let tx = await db.transaction(STORE_NAME, 'readwrite');
             let store = await tx.objectStore(STORE_NAME);
-            await store.put(data);
+            let obj = await search('image', data.image, data.room, store);
+            console.log(obj);
+            if(!obj){
+                await store.put(data);
+                console.log('added item to the store! '+ JSON.stringify(data));
+            }
+
             await  tx.done;
-            console.log('added item to the store! '+ JSON.stringify(data));
+
         } catch(error) {
             console.log(error)
             //localStorage.setItem(JSON.stringify(data));
@@ -58,26 +64,15 @@ async function storeOther(name, data, image, room) {
         await initDatabase();
     if (db) {
         try{
-            console.log("Start");
             let tx = await db.transaction(STORE_NAME, 'readwrite');
             let store = await tx.objectStore(STORE_NAME);
-            let index = await store.index(name);
-            let readingsList = await index.getAll();
 
-            await tx.done;
-
-            let obj;
-            for (let elem of readingsList) {
-                if (elem.image === image && elem.room === room.value){
-                    console.log(elem.annotations);
-                    obj = elem;
-                }
-            }
+            let obj = await search(name, image, room, store);
             if(obj){
                 obj.annotations.push(data);
+                await store.put(obj);
             }
-            console.log(obj.annotations);
-            addData(obj);
+            await tx.done;
 
         } catch(error) {
             console.log(error);
@@ -96,25 +91,31 @@ window.storeOther= storeOther
  * @returns {*}
  */
 
-async function search(name, readingsList) {
-    let finalResults=[];
-    if (readingsList && readingsList.length > 0) {
-        let max;
-        for (let elem of readingsList) {
-            if (!max || elem.date > max.date)
-                max = elem;
-        }
-        if (max) {
-            finalResults.push(max);
-        }
-        return finalResults;
-    }
-    else {
-        console.log("Bad");
+async function search(name, image, room, store) {
+    if (!db)
+        await initDatabase();
+    if (db) {
+        try{
+            let index = await store.index(name);
+            let readingsList = await index.getAll();
+
+            let obj;
+            for (let elem of readingsList) {
+                if (elem.image === image && elem.room === room.value){
+                    return(elem);
+                }
+            }
+            return false;
+
+
+        } catch(error) {
+            console.log(error);
+            //localStorage.setItem(JSON.stringify(data));
+        };
     }
 
 }
-window.getValue= getValue;
+window.search= search;
 
 
 

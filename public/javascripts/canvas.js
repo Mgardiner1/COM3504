@@ -43,7 +43,7 @@ function initCanvas(sckt, imageUrl) {
                 // @todo if you draw on the canvas, you may want to let everyone know via socket.io (socket.emit...)  by sending them
                 // room, userId, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness
                 //console.log(width);
-                console.log('value')
+                //console.log('value')
                 chat.emit('pic', ctx, room, userId, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness);
 
             }
@@ -148,7 +148,6 @@ function drawOnCanvas(image, ctx, canvasWidth, canvasHeight, prevX, prevY, currX
     ctx.lineWidth = thickness;
     ctx.stroke();
     ctx.closePath();
-    console.log("NOW");
     let data = [canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness]
     storeOther('annotations', data, image, document.getElementById('roomNo'));
 
