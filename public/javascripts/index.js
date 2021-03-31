@@ -1,7 +1,9 @@
 let name = null;
 let roomNo = null;
-let socket=null;
-let chat= io.connect('/chat');
+//let socket= null;
+//let socket= io();
+//let chat= io.connect('/chat');
+let socket= io.connect('/chat');
 
 /**
  * called by <body onload>
@@ -13,10 +15,11 @@ function init() {
     document.getElementById('initial_form').style.display = 'block';
     document.getElementById('chat_interface').style.display = 'none';
     document.getElementById('takePhoto').style.display = 'none';
+
     // set up webcam interface list
     selectCamera();
 
-    //@todo here is where you should initialise the socket operations as described in teh lectures (room joining, chat message receipt etc.)
+    //initialise the socket operations as described in the lectures (room joining, chat message receipt etc.)
     initChatSocket();
     // initStreamCanvas();
 
@@ -44,9 +47,9 @@ function generateRoom() {
  * and sends the message via  socket
  */
 function sendChatText() {
-    // @todo send the chat message
+    // send the chat message
     let chatText = document.getElementById('chat_input').value;
-    chat.emit('chat', roomNo, name, chatText);
+    socket.emit('chat', roomNo, name, chatText);
 }
 
 /**
@@ -58,9 +61,11 @@ function connectToRoom() {
     name = document.getElementById('name').value;
     let imageUrl= document.getElementById('image_url').value;
     if (!name) name = 'Unknown-' + Math.random();
-    //@todo join the room
-    chat.emit('create or join', roomNo, name);
-    initCanvas(chat, imageUrl);
+
+    //join the room
+    socket.emit('create or join', roomNo, name);
+
+    initCanvas(socket, imageUrl);
     hideLoginInterface(roomNo, name);
 }
 
@@ -79,6 +84,7 @@ function writeOnHistory(text) {
     history.scrollTop = history.scrollHeight;
     document.getElementById('chat_input').value = '';
 
+    //name,data, image, room
     storeOther('chat', text, imageBase, document.getElementById('roomNo'));
 
 }
@@ -101,7 +107,7 @@ function hideLoginInterface(room, userId) {
  */
 function initChatSocket() {
     // called when someone joins the room. If it is someone else it notifies the joining of the room
-    chat.on('joined', function (room, userId) {
+    socket.on('joined', function (room, userId) {
         if (userId === name) {
             // it enters the chat
             hideLoginInterface(room, userId);
@@ -111,7 +117,7 @@ function initChatSocket() {
         }
     });
     // called when a message is received
-    chat.on('chat', function (room, userId, chatText) {
+    socket.on('chat', function (room, userId, chatText) {
         let who = userId
         if (userId === name) who = 'Me';
         writeOnHistory('<b>' + who + ':</b> ' + chatText);

@@ -26,6 +26,8 @@ function initCanvas(sckt, imageUrl) {
     imageBase = cvx.toDataURL();
     addData({'image': imageBase, 'room': document.getElementById('roomNo').value, 'annotations': [], 'chat': []});
 
+    console.log(imageUrl);
+
     // event on the canvas when the mouse is on it
     canvas.on('mousemove mousedown mouseup mouseout', function (e) {
         prevX = currX;
@@ -46,7 +48,7 @@ function initCanvas(sckt, imageUrl) {
                 // room, userId, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness
                 //console.log(width);
                 //console.log('value')
-                chat.emit('pic', ctx, room, userId, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness);
+                socket.emit('pic', ctx, room, userId, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness);
 
             }
         }
@@ -61,9 +63,9 @@ function initCanvas(sckt, imageUrl) {
     });
 
     // @todo here you want to capture the event on the socket when someone else is drawing on their canvas (socket.on...)
-    chat.on('pic', function (ctx, room, userId, width, height, x1, y1, x2, y2, color, thickness) {
+    socket.on('pic', function (ctx, room, userId, width, height, x1, y1, x2, y2, color, thickness) {
         //let ctx = canvas[0].getContext('2d');
-        console.log(width);
+        //console.log(width);
         drawOnCanvas(imageBase, ctx, width, height, x1, y1, x2, y2, color, thickness)
     });
     // I suggest that you receive userId, canvasWidth, canvasHeight, x1, y21, x2, y2, color, thickness
@@ -135,7 +137,7 @@ function drawImageScaled(img, canvas, ctx) {
  * @param thickness of the line
  */
 function drawOnCanvas(image, ctx, canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness) {
-    //get the ration between the current canvas and the one it has been used to draw on the other comuter
+    //get the ration between the current canvas and the one it has been used to draw on the other computer
     let ratioX= canvas.width/canvasWidth;
     let ratioY= canvas.height/canvasHeight;
     // update the value of the points to draw
