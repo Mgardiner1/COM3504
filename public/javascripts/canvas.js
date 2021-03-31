@@ -49,7 +49,7 @@ function initCanvas(sckt, imageUrl) {
                 //console.log(width);
                 //console.log('value')
                 socket.emit('pic', ctx, room, userId, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness);
-
+                console.log(prevX);
             }
         }
     });
@@ -63,9 +63,10 @@ function initCanvas(sckt, imageUrl) {
     });
 
     // @todo here you want to capture the event on the socket when someone else is drawing on their canvas (socket.on...)
-    socket.on('pic', function (ctx, room, userId, width, height, x1, y1, x2, y2, color, thickness) {
+    socket.on('pic_display', function (ctx, room, userId, width, height, x1, y1, x2, y2, color, thickness) {
         //let ctx = canvas[0].getContext('2d');
-        //console.log(width);
+        console.log(width);
+        console.log('test');
         drawOnCanvas(imageBase, ctx, width, height, x1, y1, x2, y2, color, thickness)
     });
     // I suggest that you receive userId, canvasWidth, canvasHeight, x1, y21, x2, y2, color, thickness

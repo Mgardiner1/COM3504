@@ -15,7 +15,8 @@ exports.init = function(io) {
 
           //emits pictures
           socket.on('pic', function (ctx, room, userId, width, height, prevX, prevY, currX, currY, color, thickness) {
-              io.sockets.to(room).emit('pic', ctx, room, userId, width, height, prevX, prevY, currX, currY, color, thickness);
+              //io.sockets.to(room).emit('pic_display', ctx, room, userId, width, height, prevX, prevY, currX, currY, color, thickness);
+              io.sockets.in(room).emit('pic_display',ctx, room, userId, width, height, prevX, prevY, currX, currY, color, thickness);
           });
 
           //disconnects
