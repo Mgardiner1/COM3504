@@ -1,9 +1,9 @@
 let name = null;
 let roomNo = null;
 //let socket= null;
-//let socket= io();
+let socket= io();
 //let chat= io.connect('/chat');
-let socket= io.connect('/chat');
+//let socket= io.connect('/chat');
 
 /**
  * called by <body onload>
