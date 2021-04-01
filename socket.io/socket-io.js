@@ -1,5 +1,4 @@
 
-
 exports.init = function(io) {
   io.sockets.on('connection', function (socket) {
       try {
@@ -14,9 +13,12 @@ exports.init = function(io) {
           });
 
           //emits pictures
+          //need to try 2 sockets like the news and see if thats the problem
           socket.on('pic', function (ctx, room, userId, width, height, prevX, prevY, currX, currY, color, thickness) {
-              //io.sockets.to(room).emit('pic_display', ctx, room, userId, width, height, prevX, prevY, currX, currY, color, thickness);
-              io.sockets.in(room).emit('pic_display',ctx, room, userId, width, height, prevX, prevY, currX, currY, color, thickness);
+              console.log("somebody stop the fecking pain");
+              io.sockets.to(room).emit('pic_display', ctx, room, userId, width, height, prevX, prevY, currX, currY, color, thickness);
+              //io.sockets.in(room).emit('pic_display',ctx, room, userId, width, height, prevX, prevY, currX, currY, color, thickness);
+
           });
 
           //disconnects
@@ -59,4 +61,43 @@ exports.init = function(io) {
         } catch (e) {
         }
       });
+}*/
+
+/*
+exports.init = function(io) {
+
+  // the chat namespace
+  const chat = io
+      .of('/chat')
+      .on('connection', function (socket) {
+        try {
+          //it creates or joins a room
+          socket.on('create or join', function (room, userId) {
+            socket.join(room);
+            chat.to(room).emit('joined', room, userId);
+          });
+          // emits chats
+          socket.on('chat', function (room, userId, chatText) {
+            chat.to(room).emit('chat', room, userId, chatText);
+          });
+
+          //disconnects
+          socket.on('disconnect', function () {
+            console.log('someone disconnected');
+          });
+        } catch (e) {
+        }
+      });
+    // the news namespace
+    const pic= io
+        .of('/pic')
+        .on('connection', function (socket) {
+            try {
+                socket.on('pic', function (ctx, room, userId, width, height, prevX, prevY, currX, currY, color, thickness) {
+                    //socket.broadcast.to(room).emit('news', room, userId, chatText);
+                    socket.broadcast.to(room).emit('pic_display', ctx, room, userId, width, height, prevX, prevY, currX, currY, color, thickness);
+                });
+            } catch (e) {
+            }
+        });
 }*/

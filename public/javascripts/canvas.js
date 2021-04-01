@@ -6,7 +6,7 @@ let userId;
 let color = 'red', thickness = 4;
 let imageBase;
 let ctx;
-//let chat= io.connect('/chat');
+//let pic= io.connect('/pic');
 
 /**
  * it inits the image canvas to draw on. It sets up the events to respond to (click, mouse on, etc.)
@@ -48,6 +48,7 @@ function initCanvas(sckt, imageUrl) {
                 // room, userId, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness
                 //console.log(width);
                 //console.log('value')
+                console.log("somebody stop the fecking pain");
                 socket.emit('pic', ctx, room, userId, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness);
                 console.log(prevX);
             }
