@@ -22,17 +22,16 @@ async function prepareVideo(camid) {
 }
 
 function gotStream(stream) {
-    console.log(stream);
     let mediaElement = document.getElementById('video');
+    mediaElement.style.display = 'block';
     mediaElement.srcObject = stream;
     var button = document.getElementById('takePhoto');
     button.addEventListener('click', snapshot, false);
     var canvas = document.getElementById('streamCanvas');
-    canvas.height = 720;
-    canvas.width = 480;
+    canvas.height = 480;
+    canvas.width = 720;
     var ctx = canvas.getContext('2d');
-    function snapshot() {
-        alert("button clicked!");
+    async function snapshot() {
         let screenShotScale = Math.min(canvas.width / 720, canvas.height / 480);
         // get the top left position of the image
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -40,9 +39,19 @@ function gotStream(stream) {
         let y = (canvas.height / 2) - (480 / 2) * screenShotScale;
         ctx.drawImage(mediaElement, x, y, 720 * screenShotScale, 480 * screenShotScale);
         document.querySelector('img').src = canvas.toDataURL('image/png');
+        document.getElementById('image_url').value = canvas.toDataURL('image/png')
+        mediaElement.style.display = 'none';
+        document.getElementById('cameraSelect').style.display = 'block';
+        document.getElementById('takePhoto').style.display = 'none';
+        await stopCamera(stream);
     }
 }
 
+async function stopCamera(stream) {
+    stream.getTracks().forEach(function(track) {
+        track.stop();
+    });
+}
 
 async function selectCamera() {
     cameraNames=[];
