@@ -13,12 +13,18 @@ exports.init = function(io) {
           });
 
           //emits pictures
-          //need to try 2 sockets like the news and see if thats the problem
-          socket.on('pic', function (ctx, room, userId, width, height, prevX, prevY, currX, currY, color, thickness) {
-              console.log("somebody stop the fecking pain");
-              io.sockets.to(room).emit('pic_display', ctx, room, userId, width, height, prevX, prevY, currX, currY, color, thickness);
-              //io.sockets.in(room).emit('pic_display',ctx, room, userId, width, height, prevX, prevY, currX, currY, color, thickness);
+          socket.on('pic', function (room, width, height, prevX, prevY, currX, currY, color, thickness) {
+              //document.getElementById('who_you_are').innerHTML= "Second test";
+              io.sockets.to(room).emit('pic_display', room, width, height, prevX, prevY, currX, currY, color, thickness)
 
+          });
+          // ignore this its test code for annotations
+          socket.on('test', function (room) {
+              //tests to see if the method of transferring variables works, it does.
+              //proves theres something wrong with the variables themselves
+              //console.log('just a test');
+              //console.log(room);
+              io.sockets.to(room).emit('part2',room);
           });
 
           //disconnects
