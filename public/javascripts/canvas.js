@@ -8,6 +8,7 @@ let imageBase;
 let ctx;
 let cvx;
 //let chat= io.connect('/chat');
+//let pic= io.connect('/pic');
 
 /**
  * it inits the image canvas to draw on. It sets up the events to respond to (click, mouse on, etc.)
@@ -17,6 +18,9 @@ let cvx;
  */
 function initCanvas(sckt, imageUrl) {
     socket = sckt;
+    userId = document.getElementById('who_you_are').value; // this isn't working for some reason
+    room = document.getElementById('roomNo').value;
+
     let flag = false,
         prevX, prevY, currX, currY = 0;
     let canvas = $('#canvas');
@@ -26,6 +30,8 @@ function initCanvas(sckt, imageUrl) {
     img.src = imageUrl;
     imageBase = cvx.toDataURL();
     addData({'image': imageBase, 'room': document.getElementById('roomNo').value, 'annotations': [], 'chat': []});
+
+    console.log(imageUrl);
 
     // event on the canvas when the mouse is on it
     canvas.on('mousemove mousedown mouseup mouseout', function (e) {
@@ -43,12 +49,12 @@ function initCanvas(sckt, imageUrl) {
         if (e.type === 'mousemove') {
             if (flag) {
                 drawOnCanvas(imageBase, ctx, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness);
-                // @todo if you draw on the canvas, you may want to let everyone know via socket.io (socket.emit...)  by sending them
+                // draw on the canvas, you may want to let everyone know via socket.io (socket.emit...)  by sending them
                 // room, userId, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness
-                //console.log(width);
-                //console.log('value')
-                chat.emit('pic', ctx, room, userId, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness);
-
+                socket.emit('pic', room, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness);
+                // checking variable for errors
+                //document.getElementById('who_you_are').innerHTML= prevX+","+ prevY+","+ currX+","+ currY+","+color+","+ thickness;
+                socket.emit('test', room);
             }
         }
     });
@@ -61,10 +67,21 @@ function initCanvas(sckt, imageUrl) {
         // @todo if you clear the canvas, you want to let everyone know via socket.io (socket.emit...)
     });
 
-    // @todo here you want to capture the event on the socket when someone else is drawing on their canvas (socket.on...)
-    chat.on('pic', function (ctx, room, userId, width, height, x1, y1, x2, y2, color, thickness) {
+    socket.on('part2', function (room) {
         //let ctx = canvas[0].getContext('2d');
-        console.log(width);
+        //document.getElementById('who_you_are').innerHTML= "part of the test: "+ room;
+        // this train of pattern works!! whoop
+
+        // ileft this code in for any further testing, it cna be gotten rif off easily
+    });
+
+    // @todo here you want to capture the event on the socket when someone else is drawing on their canvas (socket.on...)
+    socket.on('pic_display', function ( room, userId, width, height, x1, y1, x2, y2, color, thickness) {
+        //this does work, it just doesnt draw on the canvas?
+        document.getElementById('who_you_are').innerHTML= "Third test";
+
+        // this is what isnt working and i do not understand why?!!!
+        // revisited, a lot of the data doesnt properly map onto each other or at least thats my guess
         drawOnCanvas(imageBase, ctx, width, height, x1, y1, x2, y2, color, thickness)
     });
     // I suggest that you receive userId, canvasWidth, canvasHeight, x1, y21, x2, y2, color, thickness
