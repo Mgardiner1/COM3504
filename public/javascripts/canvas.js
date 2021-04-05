@@ -6,6 +6,7 @@ let userId;
 let color = 'red', thickness = 4;
 let imageBase;
 let ctx;
+let cvx;
 //let chat= io.connect('/chat');
 
 /**
@@ -19,7 +20,7 @@ function initCanvas(sckt, imageUrl) {
     let flag = false,
         prevX, prevY, currX, currY = 0;
     let canvas = $('#canvas');
-    let cvx = document.getElementById('canvas');
+    cvx = document.getElementById('canvas');
     let img = document.getElementById('image');
     ctx = cvx.getContext('2d');
     img.src = imageUrl;
@@ -135,9 +136,11 @@ function drawImageScaled(img, canvas, ctx) {
  * @param thickness of the line
  */
 function drawOnCanvas(image, ctx, canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness) {
+
     //get the ration between the current canvas and the one it has been used to draw on the other comuter
-    let ratioX= canvas.width/canvasWidth;
-    let ratioY= canvas.height/canvasHeight;
+    let ratioX= cvx.width/canvasWidth;
+    let ratioY= cvx.height/canvasHeight;
+
     // update the value of the points to draw
     prevX*=ratioX;
     prevY*=ratioY;
@@ -150,7 +153,24 @@ function drawOnCanvas(image, ctx, canvasWidth, canvasHeight, prevX, prevY, currX
     ctx.lineWidth = thickness;
     ctx.stroke();
     ctx.closePath();
-    let data = [canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness]
+
+    /*
+    console.log("canvasWidth in func: "+canvasWidth);
+    console.log("canvasHeight in func: "+canvasHeight);
+    console.log("PrevX in func: "+prevX);
+    console.log("prevY in func: "+prevY);
+    console.log("currX in func: "+currX);
+    console.log("currY in func: "+currY);
+    console.log("color in func: "+color);
+    console.log("thickness in func: "+thickness);
+
+     */
+
+
+    let data = [canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness];
+
+
+    console.log(data);
     storeOther('annotations', data, image, document.getElementById('roomNo'));
 
 }
