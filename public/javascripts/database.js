@@ -34,17 +34,13 @@ window.initDatabase= initDatabase;
  *              annotations and chat.
  */
 async function addData(data) {
-    console.log('Store Image: '+JSON.stringify(data));
     if (!db)
         await initDatabase();
     if (db) {
         try{
             let tx = await db.transaction(STORE_NAME, 'readwrite');
             let store = await tx.objectStore(STORE_NAME);
-            console.log(data.image);
-            console.log(data.room);
             let obj = await search('image', data.image, data.room, store);
-            console.log(obj);
 
             if(obj){
                 store.delete(obj.id);
@@ -52,7 +48,6 @@ async function addData(data) {
                 let chat = obj.chat;
 
                 await store.put(data);
-                console.log(annotations);
                 for(let i = 0; i < annotations.length; i++){
                     drawOnCanvas(imageBase, ctx, parseInt(annotations[i][0]), parseInt(annotations[i][1]), parseInt(annotations[i][2]), annotations[i][3], annotations[i][4], annotations[i][5], annotations[i][6], annotations[i][7]);
                 }
@@ -114,7 +109,34 @@ async function storeOther(name, data, image, room) {
 }
 window.storeOther= storeOther
 
+/**
+ * Add annotations/chat messages to IndexedDB
+ * @param image The base64 representation of the image that has been annotated
+ * @param room The room number
+ */
+async function clearAnnotations(image, room) {
+    if (!db)
+        await initDatabase();
+    if (db) {
+        try{
+            let tx = await db.transaction(STORE_NAME, 'readwrite');
+            let store = await tx.objectStore(STORE_NAME);
 
+            let obj = await search("annotations", image, room, store);
+            console.log(obj);
+            obj.annotations = [];
+            await store.put(obj);
+
+            await tx.done;
+
+        } catch(error) {
+            console.log(error);
+            //localStorage.setItem(data.image + "-"+data.room, JSON.stringify());
+        };
+    }
+    //else localStorage.setItem(data.image + "-"+data.room, JSON.stringify());
+}
+window.clearAnnotations= clearAnnotations
 /**
  * Search to see if a particular image/room combination exists within IndexedDb
  * @param name Name of the index being used to search
@@ -147,7 +169,3 @@ async function search(name, image, room, store) {
 
 }
 window.search= search;
-
-
-
-

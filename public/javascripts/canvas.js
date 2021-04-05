@@ -30,8 +30,6 @@ function initCanvas(sckt, imageUrl) {
     img.src = imageUrl;
     imageBase = cvx.toDataURL();
 
-    console.log(imageUrl);
-
     // event on the canvas when the mouse is on it
     canvas.on('mousemove mousedown mouseup mouseout', function (e) {
         prevX = currX;
@@ -57,9 +55,14 @@ function initCanvas(sckt, imageUrl) {
 
     // this is code left in case you need to  provide a button clearing the canvas (it is suggested that you implement it)
     $('.canvas-clear').on('click', function (e) {
-        let c_width = canvas.width();
-        let c_height = canvas.height();
+        console.log("OIJOIJIOJ");
+        let c_width = canvas.width
+        let c_height = canvas.height
         ctx.clearRect(0, 0, c_width, c_height);
+        clearAnnotations(imageBase, room);
+        img.height = c_height;
+        img.width = c_width;
+        drawImageScaled(img, cvx, ctx);
         // @todo if you clear the canvas, you want to let everyone know via socket.io (socket.emit...)
     });
 
@@ -110,7 +113,12 @@ function initCanvas(sckt, imageUrl) {
  */
 function drawImageScaled(img, canvas, ctx) {
     // get the scale
+    console.log(canvas.width);
+    console.log(canvas.height);
+    console.log(img.width);
+    console.log(img.height);
     let scale = Math.min(canvas.width / img.width, canvas.height / img.height);
+    console.log(scale);
     // get the top left position of the image
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     let x = (canvas.width / 2) - (img.width / 2) * scale;
