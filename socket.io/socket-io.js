@@ -18,14 +18,6 @@ exports.init = function(io) {
               io.sockets.to(room).emit('pic_display', room, width, height, prevX, prevY, currX, currY, color, thickness)
 
           });
-          // ignore this its test code for annotations
-          socket.on('test', function (room) {
-              //tests to see if the method of transferring variables works, it does.
-              //proves theres something wrong with the variables themselves
-              //console.log('just a test');
-              //console.log(room);
-              io.sockets.to(room).emit('part2',room);
-          });
 
           //disconnects
           socket.on('disconnect', function () {
