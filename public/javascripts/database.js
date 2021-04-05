@@ -41,15 +41,12 @@ async function addData(data) {
         try{
             let tx = await db.transaction(STORE_NAME, 'readwrite');
             let store = await tx.objectStore(STORE_NAME);
+            console.log(data.image);
+            console.log(data.room);
             let obj = await search('image', data.image, data.room, store);
+            console.log(obj);
 
-
-            console.log(obj.id);
-
-            if(!obj){
-                await store.put(data);
-            }
-            else if(obj){
+            if(obj){
                 store.delete(obj.id);
                 let annotations = obj.annotations;
                 let chat = obj.chat;
@@ -76,9 +73,12 @@ async function addData(data) {
                 for(let i = 0; i < chat.length; i++){
                     writeOnHistory(chat[i]);
                 }
-
-                await  tx.done;
             }
+            if(!obj){
+                await store.put(data);
+            }
+
+            await  tx.done;
 
 
 

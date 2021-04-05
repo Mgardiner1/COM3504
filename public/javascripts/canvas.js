@@ -48,6 +48,7 @@ function initCanvas(sckt, imageUrl) {
         // if the flag is up, the movement of the mouse draws on the canvas
         if (e.type === 'mousemove') {
             if (flag) {
+                /*
                 console.log("canvas w " +canvas.width);
                 console.log("canvas h "+ canvas.height);
                 console.log("PrevX in func: "+prevX);
@@ -57,6 +58,8 @@ function initCanvas(sckt, imageUrl) {
                 console.log("color in func: "+color);
                 console.log("thickness in func: "+thickness);
                 console.log("--------------");
+
+                 */
 
 
 
@@ -88,7 +91,7 @@ function initCanvas(sckt, imageUrl) {
     });
 
     // @todo here you want to capture the event on the socket when someone else is drawing on their canvas (socket.on...)
-    socket.on('pic_display', function ( room, userId, width, height, x1, y1, x2, y2, color, thickness) {
+    socket.on('pic_display', function ( room, width, height, x1, y1, x2, y2, color, thickness) {
         //this does work, it just doesnt draw on the canvas?
         document.getElementById('who_you_are').innerHTML= "Third test";
 
@@ -166,12 +169,13 @@ function drawImageScaled(img, canvas, ctx) {
  */
 function drawOnCanvas(image, ctx, canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness) {
 
-    console.log("canvasWidth in func: "+canvasWidth);
-    console.log("canvasHeight in func: "+canvasHeight);
+    //console.log("canvasWidth in func: "+canvasWidth);
+    //console.log("canvasHeight in func: "+canvasHeight);
     //get the ration between the current canvas and the one it has been used to draw on the other comuter
     let ratioX= cvx.width/canvasWidth;
     let ratioY= cvx.height/canvasHeight;
 
+    /*
     console.log("Ratio X " +ratioX);
     console.log("Ratio Y "+ ratioY);
     console.log("PrevX in func: "+prevX);
@@ -181,6 +185,7 @@ function drawOnCanvas(image, ctx, canvasWidth, canvasHeight, prevX, prevY, currX
     console.log("color in func: "+color);
     console.log("thickness in func: "+thickness);
     console.log("");
+     */
 
     // update the value of the points to draw
     prevX*=ratioX;
@@ -195,19 +200,8 @@ function drawOnCanvas(image, ctx, canvasWidth, canvasHeight, prevX, prevY, currX
     ctx.stroke();
     ctx.closePath();
 
-    /*
-
-
-
-     */
-
-
     let data = [canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness];
-    if(!isNaN(data[5])) {
-        //console.log(data);
-        storeOther('annotations', data, image, document.getElementById('roomNo'));
-    }
-
+    storeOther('annotations', data, image, document.getElementById('roomNo'));
 }
 /*
 async function imgResize(img, cvx, ctx, canvas) {
