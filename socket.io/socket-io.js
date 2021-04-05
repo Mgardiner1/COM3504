@@ -12,11 +12,15 @@ exports.init = function(io) {
               io.sockets.to(room).emit('chat', room, userId, chatText);
           });
 
-          //emits pictures
+          //emits annotations on pictures
           socket.on('pic', function (room, width, height, prevX, prevY, currX, currY, color, thickness) {
               //document.getElementById('who_you_are').innerHTML= "Second test";
               io.sockets.to(room).emit('pic_display', room, width, height, prevX, prevY, currX, currY, color, thickness)
+          });
 
+          //clear annotations on pictures
+          socket.on('clear', function (room) {
+              io.sockets.to(room).emit('clear-display', room)
           });
 
           //disconnects

@@ -64,6 +64,19 @@ function initCanvas(sckt, imageUrl) {
         img.width = c_width;
         drawImageScaled(img, cvx, ctx);
         // @todo if you clear the canvas, you want to let everyone know via socket.io (socket.emit...)
+        socket.emit('clear', room)
+    });
+
+    // Capture event when someone else clears the canvas
+    socket.on('clear-display', function (room) {
+        console.log("OIJOIJIOJ");
+        let c_width = canvas.width
+        let c_height = canvas.height
+        ctx.clearRect(0, 0, c_width, c_height);
+        clearAnnotations(imageBase, room);
+        img.height = c_height;
+        img.width = c_width;
+        drawImageScaled(img, cvx, ctx);
     });
 
     // capture the event on the socket when someone else is drawing on their canvas (socket.on...)
