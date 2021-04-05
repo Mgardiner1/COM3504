@@ -54,20 +54,6 @@ async function addData(data) {
                 await store.put(data);
                 console.log(annotations);
                 for(let i = 0; i < annotations.length; i++){
-                    /*
-                    console.log("---------------------------------------------------------------")
-                    console.log("canvasWidth in arr: "+ annotations[i][0]);
-                    console.log("canvasHeight in arr: "+annotations[i][1]);
-                    console.log("PrevX in arr: "+ annotations[i][2]);
-                    console.log("prevY in arr: "+annotations[i][3]);
-                    console.log("currX in arr: "+annotations[i][4]);
-                    console.log("currY in arr: "+annotations[i][5]);
-                    console.log("color in arr: "+annotations[i][6]);
-                    console.log("thickness in arr: "+annotations[i][7]);
-                    console.log("---------------------------------------------------------------")
-
-                     */
-
                     drawOnCanvas(imageBase, ctx, parseInt(annotations[i][0]), parseInt(annotations[i][1]), parseInt(annotations[i][2]), annotations[i][3], annotations[i][4], annotations[i][5], annotations[i][6], annotations[i][7]);
                 }
                 for(let i = 0; i < chat.length; i++){
