@@ -48,6 +48,18 @@ function initCanvas(sckt, imageUrl) {
         // if the flag is up, the movement of the mouse draws on the canvas
         if (e.type === 'mousemove') {
             if (flag) {
+                console.log("canvas w " +canvas.width);
+                console.log("canvas h "+ canvas.height);
+                console.log("PrevX in func: "+prevX);
+                console.log("prevY in func: "+prevY);
+                console.log("currX in func: "+currX);
+                console.log("currY in func: "+currY);
+                console.log("color in func: "+color);
+                console.log("thickness in func: "+thickness);
+                console.log("--------------");
+
+
+
                 drawOnCanvas(imageBase, ctx, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness);
                 // draw on the canvas, you may want to let everyone know via socket.io (socket.emit...)  by sending them
                 // room, userId, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness
@@ -154,9 +166,21 @@ function drawImageScaled(img, canvas, ctx) {
  */
 function drawOnCanvas(image, ctx, canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness) {
 
+    console.log("canvasWidth in func: "+canvasWidth);
+    console.log("canvasHeight in func: "+canvasHeight);
     //get the ration between the current canvas and the one it has been used to draw on the other comuter
     let ratioX= cvx.width/canvasWidth;
     let ratioY= cvx.height/canvasHeight;
+
+    console.log("Ratio X " +ratioX);
+    console.log("Ratio Y "+ ratioY);
+    console.log("PrevX in func: "+prevX);
+    console.log("prevY in func: "+prevY);
+    console.log("currX in func: "+currX);
+    console.log("currY in func: "+currY);
+    console.log("color in func: "+color);
+    console.log("thickness in func: "+thickness);
+    console.log("");
 
     // update the value of the points to draw
     prevX*=ratioX;
@@ -172,23 +196,17 @@ function drawOnCanvas(image, ctx, canvasWidth, canvasHeight, prevX, prevY, currX
     ctx.closePath();
 
     /*
-    console.log("canvasWidth in func: "+canvasWidth);
-    console.log("canvasHeight in func: "+canvasHeight);
-    console.log("PrevX in func: "+prevX);
-    console.log("prevY in func: "+prevY);
-    console.log("currX in func: "+currX);
-    console.log("currY in func: "+currY);
-    console.log("color in func: "+color);
-    console.log("thickness in func: "+thickness);
+
+
 
      */
 
 
     let data = [canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness];
-
-
-    console.log(data);
-    storeOther('annotations', data, image, document.getElementById('roomNo'));
+    if(!isNaN(data[5])) {
+        //console.log(data);
+        storeOther('annotations', data, image, document.getElementById('roomNo'));
+    }
 
 }
 /*

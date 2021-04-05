@@ -49,14 +49,14 @@ async function addData(data) {
             if(!obj){
                 await store.put(data);
             }
-            if(obj){
+            else if(obj){
                 store.delete(obj.id);
                 let annotations = obj.annotations;
                 let chat = obj.chat;
 
                 await store.put(data);
                 console.log(annotations);
-                for(let i = 1; i < annotations.length; i++){
+                for(let i = 0; i < annotations.length; i++){
                     /*
                     console.log("---------------------------------------------------------------")
                     console.log("canvasWidth in arr: "+ annotations[i][0]);
