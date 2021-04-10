@@ -29,6 +29,12 @@ function init() {
     else {
         console.log('This browser doesn\'t support IndexedDB');
     }
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker
+            .register('./service-worker.js')
+            .then(function() { console.log('Service Worker Registered'); });
+    }
+    loadData(false);
 }
 
 
