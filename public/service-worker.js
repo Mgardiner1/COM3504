@@ -15,11 +15,11 @@
 var dataCacheName = 'com3504-v1';
 var cacheName = 'com3504-data-v1';
 var filesToCache = [
-    '/javascripts/idb/index.js',
-    '/javascripts/idb/wrap-idb-value.js',
-    '/javascripts/canvas.js',
-    '/javascripts/database.js',
-    '/javascripts/index.js',
+    //'/javascripts/idb/index.js',
+    //'/javascripts/idb/wrap-idb-value.js',
+    //'/javascripts/canvas.js',
+    //'/javascripts/database.js',
+    //'/javascripts/index.js',
     '/javascripts/photos.js',
     '/stylesheets/style.css',
 ];
