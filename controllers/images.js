@@ -9,11 +9,16 @@ exports.getImg = function (req, res) {
     try {
         Image.find()
             .where('title').equals(imgData.title)
-            .select('title author image_blob')
+            .select('title description author image_blob')
             .exec(function(err, result) {
                 if (err)
                     res.status(500).send('Invalid data!');
-                let image = {title: result.title, author: result.author, image_blob: result.image_blob}
+                let image = {
+                    title: result.title,
+                    description: result.description,
+                    author: result.author,
+                    image_blob: result.image_blob
+                }
 
                 res.setHeader('Content-Type', 'application/json');
                 res.send(JSON.stringify(image));
@@ -26,12 +31,14 @@ exports.getImg = function (req, res) {
 // create a function to insert an image into the database
 exports.insert = function(res, req) {
     let imgData = req.body;
+    console.log(imgData);
     if (imgData == null) {
         res.status(403).send('No data sent!')
     }
     try {
         let image = new Image({
             title: imgData.title,
+            description: imgData.description,
             author: imgData.author,
             image_blob: imgData.image_blob
         });
