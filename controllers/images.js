@@ -24,13 +24,13 @@ exports.getImg = function (req, res) {
                 res.send(JSON.stringify(image));
             });
     } catch (e) {
-        res.status(500).send('error '+ e);
+        res.status(500).send('error getting image'+ e);
     }
 }
 
 // create a function to insert an image into the database
-exports.insert = function(res, req) {
-    let imgData = req.body;
+exports.insert = async function(res, req) {
+    let imgData = req.req.body;
     console.log(imgData);
     if (imgData == null) {
         res.status(403).send('No data sent!')
@@ -42,12 +42,12 @@ exports.insert = function(res, req) {
             author: imgData.author,
             image_blob: imgData.image_blob
         });
-
-        image.save(function(err,results) {
+        console.log(image);
+         await image.save(function(err,results) {
             console.log(results._id);
         });
 
     } catch (e) {
-        res.status(500).send('error ' + e);
+        res.status(500).send('error inserting image' + e);
     }
 }

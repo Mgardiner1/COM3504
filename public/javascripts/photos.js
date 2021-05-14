@@ -111,25 +111,25 @@ async function sourceSelect() {
 
 async function sendImage() {
     var canvas = document.getElementById('streamCanvas');
-    var data = {
+    var data = JSON.stringify({
         title: document.getElementById('imageTitle').value,
         description: document.getElementById('imageDesc').value,
         author: document.getElementById('imageAuthor').value,
-        image_blob: canvas.toDataURL('image/png')
-    };
+        image_blob: 12 // canvas.toDataURL('image/png')
+    });
     console.log(data);
     $.ajax({
-        dataType: "json",
-        url: '/upload_image',
+        url: "/upload_image",
+        contentType: "application/json",
         type: 'POST',
         data: data,
-        success: function(data) {
-            token = data.token;
+        success: function(dataR) {
+            var token = data.token;
             // reload
             location.reload();
         },
         error: function(err) {
-            alert('Error: ' + err.status + ':' + err.statusText);
+            alert('Error with AJAX: ' + err.status + ':' + err.statusText);
         }
     });
 }
