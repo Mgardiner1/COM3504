@@ -5,8 +5,9 @@ const Schema = mongoose.Schema;
 // create image Schema with basic properties
 const Image = new Schema (
     {
-        title: {type: String,  required: true, max: 100},
-        author: {type: String, required: true, max: 100},
+        title: {type: String,  required: true, max: 50},
+        description: {type: String, required: true, max: 200},
+        author: {type: String, required: true, max: 50},
         image_blob: {type: String, required:true}
     }
 );

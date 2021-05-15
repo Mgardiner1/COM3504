@@ -30,14 +30,23 @@
     <p id = "error"></div>
 </div>
 <div id="photoCapture">
-    <button id="takePhoto">Take Photo</button>
-    <video id='video' autoplay></video>
-    <img src=''>
-    <canvas id="streamCanvas" style="display:none;"></canvas>
-
     <div id='cameraSelect'>
         <select id="cameraOptions" onload="selectCamera()"></select>
         <button id="sourceSelect" onclick="sourceSelect()">Start Camera</button>
+    </div>
+    <video id='video' autoplay></video>
+    <img src=''>
+    <canvas id="streamCanvas" style="display:none;"></canvas>
+    <button id="takePhoto">Take Photo</button>
+
+    <div id='imageUpload' style="display:none;">
+        <label for="imageTitle">Image Title:</label><br>
+        <input type="text" id="imageTitle" maxlength="50"></input><br>
+        <label for="imageDesc">Image Description:</label><br>
+        <textarea id="imageDesc" rows="4" cols="50" maxlength="200"></textarea><br>
+        <label for="imageAuthor">Author:</label><br>
+        <input type="text" id="imageAuthor" maxlength="50"></input><br>
+        <button id="uploadPhoto" onclick="sendImage()"">Upload Photo</button>
     </div>
 </div>
 <div id="chat_interface" style="display: none">
