@@ -29,13 +29,24 @@ function init() {
     else {
         console.log('This browser doesn\'t support IndexedDB');
     }
-    /*
+
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker
-            .register('./service-worker.js')
+            .register('./sw.js')
             .then(function() { console.log('Service Worker Registered'); });
     }
-    loadData(false);*/
+    loadData(false);
+    /*if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('./sw.js').then(function(registration) {
+                // Registration was successful
+                console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            }, function(err) {
+                // registration failed :(
+                console.log('ServiceWorker registration failed: ', err);
+            });
+        });
+    }*/
 }
 
 
