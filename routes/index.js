@@ -10,5 +10,4 @@ router.get('/', function(req, res, next) {
 router.post('/get_image', image.getImg);
 router.post('/upload_image', image.insert);
 
-router.post('')
 module.exports = router;

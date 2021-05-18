@@ -1,35 +1,25 @@
 let Image = require('../models/images');
 
 // create a function to return an image object from a name query
-exports.getImg = function (req, res) {
+exports.getImg = async function (req, res) {
     let imgData = req.body;
+    console.log(imgData.author);
     if (imgData == null) {
         res.status(403).send('No data sent!')
     }
     try {
-        Image.find()
-            .where('title').equals(imgData.title)
-            .select('title description author image_blob')
-            .exec(function(err, result) {
-                if (err)
-                    res.status(500).send('Invalid data!');
-                let image = {
-                    title: result.title,
-                    description: result.description,
-                    author: result.author,
-                    image_blob: result.image_blob
-                }
+        const images = await Image.find({author: imgData.author})
 
-                res.setHeader('Content-Type', 'application/json');
-                res.send(JSON.stringify(image));
-            });
+        //console.log(images);
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify(images));
     } catch (e) {
         res.status(500).send('error getting image'+ e);
     }
 }
 
 // create a function to insert an image into the database
-exports.insert = async function(res, req) {
+exports.insert = function(res, req) {
     let imgData = req.req.body;
     console.log(imgData);
     if (imgData == null) {
@@ -43,8 +33,13 @@ exports.insert = async function(res, req) {
             image_blob: imgData.image_blob
         });
         console.log(image);
-         await image.save(function(err,results) {
-            console.log(results._id);
+         image.save(function(err,results) {
+             if (err) {
+                 console.log('Error: ' + err);
+             }
+             else {
+                 console.log(results._id);
+             }
         });
 
     } catch (e) {

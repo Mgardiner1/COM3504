@@ -46,9 +46,25 @@
         <textarea id="imageDesc" rows="4" cols="50" maxlength="200"></textarea><br>
         <label for="imageAuthor">Author:</label><br>
         <input type="text" id="imageAuthor" maxlength="50"></input><br>
-        <button id="uploadPhoto" onclick="sendImage()"">Upload Photo</button>
+        <button id="uploadPhoto" onclick="sendImage()">Upload Photo</button>
     </div>
 </div>
+
+<div id="database_images" style="display:block">
+
+    <label for="imageTitle">Search for Image by Author:</label><br>
+    <input type="text" id="authorSearch"></input>
+    <button id="authorSearchInput" onclick="displayDBImages()">Find Image</button>
+    <table id="image_table">
+        <tr>
+            <th>Image</th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Author</th>
+        </tr>
+    </table>
+</div>
+
 <div id="chat_interface" style="display: none">
     <div>
     <p><div id="who_you_are" style="display: inline" style="height: 10vh"></div>, you are in room: <div id="in_room" style="display: inline"></div>

@@ -18,10 +18,10 @@ app.set('view engine', 'ejs');
 
 
 app.use(logger('dev'));
-app.use(express.json({limit: '10mb'}));
-app.use(express.urlencoded({ limit: '10mb', extended: false }));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true }));
+//app.use(express.json({limit: '10mb'}));
+//app.use(express.urlencoded({ limit: '10mb', extended: false }));
+app.use(bodyParser.json({limit: '10mb'}));
+app.use(bodyParser.urlencoded({limit: '10mb', extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 

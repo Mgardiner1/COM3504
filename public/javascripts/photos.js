@@ -3,8 +3,8 @@ async function prepareVideo(camid) {
     var session = {
         audio: false,
         video: {
-            width: 720,
-            height: 480,
+            width: 480,
+            height: 270,
             // check if there is a camera
             deviceId: camid ? {exact: camid} : true,
             facingMode: 'environment',
@@ -36,19 +36,19 @@ function gotStream(stream) {
     button.addEventListener('click', snapshot, false);
     // create canvas to display the stream in
     var canvas = document.getElementById('streamCanvas');
-    canvas.height = 480;
-    canvas.width = 720;
+    canvas.height = 270;
+    canvas.width = 480;
     var ctx = canvas.getContext('2d');
     // call back function to take snapshot of stream canvas
     async function snapshot() {
         // set scale
-        let screenShotScale = Math.min(canvas.width / 720, canvas.height / 480);
+        let screenShotScale = Math.min(canvas.width / 480, canvas.height / 270);
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         // set x & y
-        let x = (canvas.width / 2) - (720 / 2) * screenShotScale;
-        let y = (canvas.height / 2) - (480 / 2) * screenShotScale;
+        let x = (canvas.width / 2) - (480 / 2) * screenShotScale;
+        let y = (canvas.height / 2) - (270 / 2) * screenShotScale;
         // take snapshot
-        await ctx.drawImage(mediaElement, x, y, 720 * screenShotScale, 480 * screenShotScale);
+        await ctx.drawImage(mediaElement, x, y, 480 * screenShotScale, 270 * screenShotScale);
         // display snapshot
         document.querySelector('img').src = canvas.toDataURL('image/png');
         document.getElementById('image_url').value = canvas.toDataURL('image/png')
@@ -115,25 +115,78 @@ async function sendImage() {
         title: document.getElementById('imageTitle').value,
         description: document.getElementById('imageDesc').value,
         author: document.getElementById('imageAuthor').value,
-        image_blob: 12 // canvas.toDataURL('image/png')
+        image_blob: canvas.toDataURL('image/png')
     });
     console.log(data);
+    await sendImageAJAX("/upload_image", data);
+    event.preventDefault();
+}
+
+async function displayDBImages() {
+    var data = JSON.stringify({
+        author: document.getElementById('authorSearch').value
+    });
+    await getImageAJAX("/get_image", data);
+    console.log(data);
+
+    //console.log(result);
+    //console.log(images);
+}
+
+async function sendImageAJAX(url, data) {
     $.ajax({
-        url: "/upload_image",
-        contentType: "application/json",
+        url: url,
+        contentType: 'application/json',
         type: 'POST',
         data: data,
-        success: function(dataR) {
-            var token = data.token;
+        success: function (dataR) {
+            //console.log(dataR);
+            const r =  dataR;
             // reload
-            location.reload();
+            //location.reload();
         },
-        error: function(err) {
+        error: function (error) {
             alert('Error with AJAX: ' + err.status + ':' + err.statusText);
+
+        }
+    });
+}
+
+async function getImageAJAX(url, data) {
+    $.ajax({
+        url: url,
+        contentType: 'application/json',
+        type: 'POST',
+        data: data,
+        success: function (dataR) {
+            const r =  dataR;
+            console.log(dataR[0].author);
+            var table = document.getElementById('image_table');
+
+            for (i =0; i < dataR.length; i++) {
+                var row = table.insertRow();
+                var imgCell = row.insertCell(0)
+                var titleCell = row.insertCell(1);
+                var descriptionCell = row.insertCell(2);
+                var authorCell = row.insertCell(3);
+                const styleOptions = "height:100px;width:150px;"
+                imgCell.innerHTML = "<img src=" + dataR[i].image_blob + " style = " + styleOptions+ "></img>";
+
+                titleCell.innerHTML = dataR[i].title;
+                descriptionCell.innerHTML = dataR[i].description;
+                authorCell.innerHTML = dataR[i].author;
+            }
+            // reload
+            //location.reload();
+        },
+        error: function (error) {
+            alert('Error with AJAX: ' + err.status + ':' + err.statusText);
+
         }
     });
 }
 /*
+
 async function initStreamCanvas() {
     var button = document.getElementById('takePhoto');
     var video = document.querySelector('video');
