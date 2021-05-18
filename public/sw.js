@@ -2,7 +2,10 @@ var CACHE_NAME = 'com3504-site';
 var urlsToCache = [
     '/',
     '/stylesheets/style.css',
-    '/javascripts/canvas.js'
+    '/javascripts/canvas.js',
+    //'/javascripts/database.js',
+    //'/javascripts/photos.js',
+    //'/get_image'
 ];
 
 self.addEventListener('install', function(event) {

@@ -1,9 +1,6 @@
 let name = null;
 let roomNo = null;
-//let socket= null;
 let socket= io();
-//let chat= io.connect('/chat');
-//let socket= io.connect('/chat');
 
 /**
  * called by <body onload>
@@ -30,23 +27,13 @@ function init() {
         console.log('This browser doesn\'t support IndexedDB');
     }
 
+
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker
-            .register('./sw.js')
+            .register('./service-worker.js')
             .then(function() { console.log('Service Worker Registered'); });
     }
-    loadData(false);
-    /*if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-            navigator.serviceWorker.register('./sw.js').then(function(registration) {
-                // Registration was successful
-                console.log('ServiceWorker registration successful with scope: ', registration.scope);
-            }, function(err) {
-                // registration failed :(
-                console.log('ServiceWorker registration failed: ', err);
-            });
-        });
-    }*/
+    //loadData(false);
 }
 
 
