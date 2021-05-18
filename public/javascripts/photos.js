@@ -145,7 +145,7 @@ async function sendImageAJAX(url, data) {
             // reload
             //location.reload();
         },
-        error: function (error) {
+        error: function (err) {
             alert('Error with AJAX: ' + err.status + ':' + err.statusText);
 
         }
@@ -159,27 +159,29 @@ async function getImageAJAX(url, data) {
         type: 'POST',
         data: data,
         success: function (dataR) {
-            const r =  dataR;
-            console.log(dataR[0].author);
-            var table = document.getElementById('image_table');
+            if (dataR.length > 0) {
+                console.log(dataR[0].author);
+                var table = document.getElementById('image_table');
 
-            for (i =0; i < dataR.length; i++) {
-                var row = table.insertRow();
-                var imgCell = row.insertCell(0)
-                var titleCell = row.insertCell(1);
-                var descriptionCell = row.insertCell(2);
-                var authorCell = row.insertCell(3);
-                const styleOptions = "height:100px;width:150px;"
-                imgCell.innerHTML = "<img src=" + dataR[i].image_blob + " style = " + styleOptions+ "></img>";
+                for (i =0; i < dataR.length; i++) {
+                    var row = table.insertRow();
+                    var imgCell = row.insertCell(0)
+                    var titleCell = row.insertCell(1);
+                    var descriptionCell = row.insertCell(2);
+                    var authorCell = row.insertCell(3);
+                    const styleOptions = "height:100px;width:150px;"
+                    imgCell.innerHTML = "<img src=" + dataR[i].image_blob + " style = " + styleOptions+ "></img>";
 
-                titleCell.innerHTML = dataR[i].title;
-                descriptionCell.innerHTML = dataR[i].description;
-                authorCell.innerHTML = dataR[i].author;
+                    titleCell.innerHTML = dataR[i].title;
+                    descriptionCell.innerHTML = dataR[i].description;
+                    authorCell.innerHTML = dataR[i].author;
+                }
+                // reload
+                //location.reload();
             }
-            // reload
-            //location.reload();
+
         },
-        error: function (error) {
+        error: function (err) {
             alert('Error with AJAX: ' + err.status + ':' + err.statusText);
 
         }
