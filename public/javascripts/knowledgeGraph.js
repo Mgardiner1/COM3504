@@ -34,14 +34,40 @@ function widgetInit(){
  * callback called when an element in the widget is selected
  * @param event the Google Graph widget event {@link https://developers.google.com/knowledge-graph/how-tos/search-widget}
  */
-function selectItem(event){
+
+/**
+ * receives the JSON-LD of the selected Knowledge Graph Item
+ * @TODO write the JSON-LD to IndexDB for later display
+ * @TODO write the JSON-LD to socket.io for display to other users
+ */
+async function selectItem(event){
     let row= event.row;
-    // document.getElementById('resultImage').src= row.json.image.url;
-    document.getElementById('resultId').innerText= 'id: '+row.id;
-    document.getElementById('resultName').innerText= row.name;
-    document.getElementById('resultDescription').innerText= row.rc;
-    document.getElementById("resultUrl").href= row.qc;
-    document.getElementById('resultPanel').style.display= 'block';
+
+    // get the current color
+    let color = document.getElementById('colorOptions').value;
+    // put information into a table
+    await createPanel(row.id, row.name, row.rc, row.qc, color)
+}
+
+// displays the JSON-LD in a panel
+async function createPanel(id, name, description, url, color) {
+    let panels = document.getElementById('resultPanels');
+    let panel = document.createElement('div');
+    panel.className = 'resultPanel';
+    panel.innerHTML = `
+    <h3>`+ name + `</h3>
+    <h4>`+ id + `</h4>
+    <div>` + description + `</div>
+    <div>
+        <a href=`+ url + `>
+            Link to Webpage
+        </a>
+    </div>`
+
+    panel.style.display= 'block';
+    panel.style.border= 'thick solid' + color;
+
+    panels.appendChild(panel);
 }
 
 /**
@@ -63,4 +89,17 @@ function queryMainEntity(id, type){
             $('<div>', {text: element['result']['name']}).appendTo(document.body);
         });
     });
+}
+
+async function knowledgeOn() {
+    document.getElementById('typeForm').style.display = 'block';
+    document.getElementById('knowledgeOn').style.display = 'none';
+    document.getElementById('knowledgeOff').style.display = 'block';
+}
+
+async function knowledgeOff() {
+    document.getElementById('typeForm').style.display = 'none';
+    document.getElementById('widget').style.display = 'none';
+    document.getElementById('knowledgeOn').style.display = 'block';
+    document.getElementById('knowledgeOff').style.display = 'none';
 }
