@@ -3,7 +3,8 @@
  */
 let room;
 let userId;
-let color = 'red', thickness = 4;
+//let color = 'red',
+let thickness = 4;
 let imageBase;
 let ctx;
 let cvx;
@@ -32,6 +33,9 @@ function initCanvas(sckt, imageUrl) {
 
     // event on the canvas when the mouse is on it
     canvas.on('mousemove mousedown mouseup mouseout', function (e) {
+        let colorList = document.getElementById("colorOptions");
+        let color = colorList.options[colorList.selectedIndex].value;
+
         prevX = currX;
         prevY = currY;
         currX = e.clientX - canvas.position().left;
