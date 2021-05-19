@@ -1,5 +1,7 @@
 const service_url = 'https://kgsearch.googleapis.com/v1/entities:search';
 const apiKey= 'AIzaSyAG7w627q-djB4gTTahssufwNOImRqdYKM';
+//let room;
+//let socket= io();
 
 /**
  * it inits the widget by selecting the type from the field myType
@@ -47,7 +49,17 @@ async function selectItem(event){
     let color = document.getElementById('colorOptions').value;
     // put information into a table
     await createPanel(row.id, row.name, row.rc, row.qc, color)
+    // Display to other users - send information other users
+    room = document.getElementById('roomNo').value;
+
+    socket.emit('knowledge', room, row.id, row.name, row.rc, row.qc, color);
 }
+
+
+socket.on('knowledge_display', function (id, name, rc, qc, color) {
+     createPanel(id, name, rc, qc, color)
+         .then(r => {})
+});
 
 // displays the JSON-LD in a panel
 async function createPanel(id, name, description, url, color) {

@@ -14,13 +14,19 @@ exports.init = function(io) {
 
           //emits annotations on pictures
           socket.on('pic', function (room, width, height, prevX, prevY, currX, currY, color, thickness) {
-              //document.getElementById('who_you_are').innerHTML= "Second test";
               io.sockets.to(room).emit('pic_display', room, width, height, prevX, prevY, currX, currY, color, thickness)
           });
 
           //clear annotations on pictures
           socket.on('clear', function (room) {
               io.sockets.to(room).emit('clear-display', room)
+          });
+
+          //show knowledge graph to other users
+          socket.on('knowledge', function (room, id, name, rc, qc, color) {
+              //other users except sender
+              socket.broadcast.to(room).emit('knowledge_display', id, name, rc, qc, color);
+              //io.sockets.to(room).emit('knowledge_display', room, id, name, rc, qc, color)
           });
 
           //disconnects
