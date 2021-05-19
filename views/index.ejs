@@ -74,7 +74,7 @@
 </div>
 
 <div id="chat_interface" style="display: none">
-    <div>
+    <div style="display:none">
         <h5>Search the Knowledge Graph</h5>
         <div class="myRow" id="typeForm">
             <label for="myType">Type: </label><input type="text" id="myType">
@@ -107,11 +107,11 @@
     </div>
     <div id = "chooseColor">
         <label for="colorOptions">Choose a colour</label>
-        <select id="colorOptions">
-            <option value="red">Red</option>
-            <option value="green">Green</option>
-            <option value="blue">Blue</option>
-        </select>
+        <input type="color" id="colorOptions">
+    </div>
+    <div>
+        <button id="knowledgeOn" onclick="knowledgeOn()">Turn on Knowledge Annotation</button>
+        <button id="knowledgeOff" onclick="knowledgeOff()">Turn off Knowledge Annotations</button>
     </div>
     <div id = "clearCanvas">
         <button class ="canvas-clear">Clear Canvas</button>

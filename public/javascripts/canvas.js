@@ -33,8 +33,7 @@ function initCanvas(sckt, imageUrl) {
 
     // event on the canvas when the mouse is on it
     canvas.on('mousemove mousedown mouseup mouseout', function (e) {
-        let colorList = document.getElementById("colorOptions");
-        let color = colorList.options[colorList.selectedIndex].value;
+        let color = document.getElementById('colorOptions').value;
 
         prevX = currX;
         prevY = currY;
