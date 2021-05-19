@@ -1,7 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/html">
 <head>
     <title><%= title %></title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/knowledge/kgsearch/widget/1.0/widget.min.css">
+    <script type="text/javascript" src="https://www.gstatic.com/knowledge/kgsearch/widget/1.0/widget.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <link rel='stylesheet' href='/stylesheets/style.css'/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -9,8 +14,10 @@
     <script src="/javascripts/canvas.js"></script>
     <script src="/javascripts/photos.js"></script>
     <script src="/javascripts/database.js" type="module"></script>
+    <script type="application/javascript" src="/javascripts/knowledgeGraph.js"></script>
 
 </head>
+
 <body onload="init()">
 <div id="initial_form" style="display: block">
     <h1><%= title %></h1>
@@ -29,6 +36,7 @@
     </form>
     <p id = "error"></div>
 </div>
+
 <div id="photoCapture">
     <div id='cameraSelect'>
         <select id="cameraOptions" onload="selectCamera()"></select>
@@ -66,6 +74,29 @@
 </div>
 
 <div id="chat_interface" style="display: none">
+    <div>
+        <h5>Search the Knowledge Graph</h5>
+        <div class="myRow" id="typeForm">
+            <label for="myType">Type: </label><input type="text" id="myType">
+            <button onclick="widgetInit()">Set type</button>
+        </div>
+        <div class="myRow" id='widget' style="display: none">
+            <label for="myInput">Search for: </label><input type="text" id="myInput">
+            <div class="myRow" id="typeSet"></div>
+        </div>
+        <div>
+            <div class='resultPanel' id="resultPanel" style="display:none;width:300px;height:25px;">
+                <h3 id="resultName"></h3>
+                <h4 id="resultId"></h4>
+                <div id="resultDescription"></div>
+                <div>
+                    <a id="resultUrl" target="_blank">
+                        Link to Webpage
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
     <div>
     <p><div id="who_you_are" style="display: inline" style="height: 10vh"></div>, you are in room: <div id="in_room" style="display: inline"></div>
     </div>

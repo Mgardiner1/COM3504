@@ -108,43 +108,54 @@ async function sourceSelect() {
     document.getElementById('imageUpload').style.display = 'none';
     document.getElementById('takePhoto').style.display = 'block';
 }
-
+// function to send an image to MongoDB
 async function sendImage() {
+    // get the image stream canvas at the current time
     var canvas = document.getElementById('streamCanvas');
+    // capture data from the stream and input boxes
     var data = JSON.stringify({
         title: document.getElementById('imageTitle').value,
         description: document.getElementById('imageDesc').value,
         author: document.getElementById('imageAuthor').value,
         image_blob: canvas.toDataURL('image/png')
     });
-    console.log(data);
+    // send data to server
     await sendImageAJAX("/upload_image", data);
     event.preventDefault();
 }
 
 async function displayDBImages() {
+    // find any current images
+    var rows = document.getElementsByClassName('image_table');
+
+    // remove them one by one leaving the table headers
+    for (i=0; i<rows.length; i++) {
+        rows[i].parentElement.remove();
+    }
+
+    // get the value of the authorSearch text input
     var data = JSON.stringify({
         author: document.getElementById('authorSearch').value
     });
-    await getImageAJAX("/get_image", data);
-    console.log(data);
 
-    //console.log(result);
-    //console.log(images);
+    // query the server with that author
+    await getImageAJAX("/get_image", data);
+
 }
 
+// AJAX function to send images to server
 async function sendImageAJAX(url, data) {
     $.ajax({
+        // set params
         url: url,
         contentType: 'application/json',
         type: 'POST',
         data: data,
         success: function (dataR) {
-            //console.log(dataR);
+            //response is not important
             const r =  dataR;
-            // reload
-            //location.reload();
         },
+        // catch errors
         error: function (err) {
             alert('Error with AJAX: ' + err.status + ':' + err.statusText);
 
@@ -152,38 +163,44 @@ async function sendImageAJAX(url, data) {
     });
 }
 
+// function to receive images using AJAX
+// takes a url & author data as input
 async function getImageAJAX(url, data) {
     $.ajax({
+        // set params
         url: url,
         contentType: 'application/json',
         type: 'POST',
         data: data,
         success: function (dataR) {
+            // check if image(s) exist
             if (dataR.length > 0) {
-                console.log(dataR[0].author);
+                // find table
                 var table = document.getElementById('image_table');
-
+                const tableClass = 'image_table';
+                // insert image properties into table
                 for (i =0; i < dataR.length; i++) {
                     var row = table.insertRow();
+                    row.className = tableClass;
                     var imgCell = row.insertCell(0)
                     var titleCell = row.insertCell(1);
                     var descriptionCell = row.insertCell(2);
                     var authorCell = row.insertCell(3);
                     const styleOptions = "height:100px;width:150px;"
-                    imgCell.innerHTML = "<img src=" + dataR[i].image_blob + " style = " + styleOptions+ "></img>";
 
+                    imgCell.innerHTML = "<img src=" + dataR[i].image_blob + " style = " + styleOptions+ "></img>";
                     titleCell.innerHTML = dataR[i].title;
                     descriptionCell.innerHTML = dataR[i].description;
                     authorCell.innerHTML = dataR[i].author;
+
                 }
-                // reload
-                //location.reload();
+
             }
 
         },
+        // catch errors
         error: function (err) {
             alert('Error with AJAX: ' + err.status + ':' + err.statusText);
-
         }
     });
 }

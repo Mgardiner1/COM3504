@@ -156,7 +156,7 @@ function drawImageScaled(img, canvas, ctx) {
  * @param color of the line
  * @param thickness of the line
  */
-function drawOnCanvas(image, ctx, canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness) {
+function drawOnCanvas(image, ctx, canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness, dashed=false) {
 
     //get the ration between the current canvas and the one it has been used to draw on the other comuter
     let ratioX= cvx.width/canvasWidth;
@@ -167,6 +167,9 @@ function drawOnCanvas(image, ctx, canvasWidth, canvasHeight, prevX, prevY, currX
     prevY*=ratioY;
     currX*=ratioX;
     currY*=ratioY;
+    if (dashed) {
+        ctx.setLineDash([10,5]);
+    }
     ctx.beginPath();
     ctx.moveTo(prevX, prevY);
     ctx.lineTo(currX, currY);
