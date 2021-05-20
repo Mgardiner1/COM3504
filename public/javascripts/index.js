@@ -1,6 +1,6 @@
 let name = null;
 let roomNo = null;
-let image = "";
+let imageUrl = "";
 let socket= io();
 
 /**
@@ -66,11 +66,11 @@ async function connectToRoom() {
 
     roomNo = document.getElementById('roomNo').value;
     name = document.getElementById('name').value;
-    let imageUrl = document.getElementById('image_url').value;
+    let image_url = document.getElementById('image_url').value;
 
-    if (name && roomNo && imageUrl) {
-
-        let data = JSON.stringify({urlImage: imageUrl});
+    if (name && roomNo && image_url) {
+        imageUrl = image_url;
+        let data = JSON.stringify({urlImage: image_url});
 
         await sendURL(data);
         //console.log(image);
@@ -91,9 +91,8 @@ function sendURL(data) {
 
         success: function (dataR) {
             imageBase = dataR;
-            console.log(imageBase);
             socket.emit('create or join', roomNo, name);
-            initCanvas(socket, document.getElementById('image_url').value);
+            initCanvas(socket, imageUrl);
             hideLoginInterface(roomNo, name);
 
         },
@@ -107,32 +106,32 @@ function sendURL(data) {
 
 
 function newImage(){
-    let imageUrl = document.getElementById('url').value;
-    if(imageUrl){
-
-        // Remove the canvas and image elements
-        document.getElementById("url").value = ""
-        let canvasDiv = document.getElementById("canvas_div")
-        let canvas = document.getElementById("canvas");
-        let img = document.getElementById("image");
-        canvasDiv.removeChild(canvas);
-        canvasDiv.removeChild(img);
-
-        // Recreate canvas and image elements
-        let newElement = document.createElement("img", 'height="100%"');
-        newElement.id = "image"
-        canvasDiv.appendChild(newElement);
-        newElement = document.createElement("canvas");
-        newElement.id = "canvas"
-        canvasDiv.appendChild(newElement);
-        socket.emit('create or join', roomNo, name)
-
-        initCanvas(socket, imageUrl);
-        hideLoginInterface(roomNo, name);
-
+    var image_url = document.getElementById('url').value;
+    if(image_url){
+        imageUrl = image_url;
+        recreateCanvas();
+        let data = JSON.stringify({urlImage: imageUrl});
+        sendURL(data)
     }
 }
 
+function recreateCanvas(){
+    // Remove the canvas and image elements
+    document.getElementById("url").value = ""
+    let canvasDiv = document.getElementById("canvas_div")
+    let canvas = document.getElementById("canvas");
+    let img = document.getElementById("image");
+    canvasDiv.removeChild(canvas);
+    canvasDiv.removeChild(img);
+
+    // Recreate canvas and image elements
+    let newElement = document.createElement("img", 'height="100%"');
+    newElement.id = "image"
+    canvasDiv.appendChild(newElement);
+    newElement = document.createElement("canvas");
+    newElement.id = "canvas"
+    canvasDiv.appendChild(newElement);
+}
 
 /**
  * it appends the given html text to the history div
