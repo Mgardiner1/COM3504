@@ -41,6 +41,8 @@ async function addData(data) {
             let tx = await db.transaction(STORE_NAME, 'readwrite');
             let store = await tx.objectStore(STORE_NAME);
             let obj = await search('image', data.image, data.room, store);
+            console.log(data.image);
+            console.log(data.room);
 
             if(obj){
                 store.delete(obj.id);

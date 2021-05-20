@@ -27,10 +27,15 @@ function initCanvas(sckt, imageUrl) {
     let canvas = $('#canvas');
     cvx = document.getElementById('canvas');
     let img = document.getElementById('image');
+    img.src = imageUrl;
     ctx = cvx.getContext('2d');
     ctx.save();
-    img.src = imageUrl;
+
     imageBase = cvx.toDataURL();
+
+
+
+
 
     // event on the canvas when the mouse is on it
     canvas.on('mousemove mousedown mouseup mouseout', function (e) {
@@ -59,7 +64,6 @@ function initCanvas(sckt, imageUrl) {
 
     // this is code left in case you need to  provide a button clearing the canvas (it is suggested that you implement it)
     $('.canvas-clear').on('click', function (e) {
-        console.log("OIJOIJIOJ");
         let c_width = canvas.width
         let c_height = canvas.height
         ctx.clearRect(0, 0, c_width, c_height);
@@ -73,7 +77,6 @@ function initCanvas(sckt, imageUrl) {
 
     // Capture event when someone else clears the canvas
     socket.on('clear-display', function (room) {
-        console.log("OIJOIJIOJ");
         let c_width = canvas.width
         let c_height = canvas.height
         ctx.clearRect(0, 0, c_width, c_height);
