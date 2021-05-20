@@ -27,7 +27,7 @@ function initCanvas(sckt, imageUrl) {
     let canvas = $('#canvas');
     cvx = document.getElementById('canvas');
     let img = document.getElementById('image');
-    img.src = imageUrl;
+    img.src = imageBase;
     ctx = cvx.getContext('2d');
     ctx.save();
 

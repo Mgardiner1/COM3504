@@ -71,6 +71,14 @@ async function connectToRoom() {
     let image_url = document.getElementById('image_url').value;
 
     if (name && roomNo && image_url) {
+        if(image_url.substring(0,4) == "data"){
+
+            imageBase = image_url;
+            socket.emit('create or join', roomNo, name);
+            initCanvas(socket, imageBase);
+            hideLoginInterface(roomNo, name);
+
+        }
         imageUrl = image_url;
         let data = JSON.stringify({urlImage: image_url});
 
