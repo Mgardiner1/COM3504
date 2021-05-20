@@ -18,13 +18,7 @@ router.post('/upload_image', image.insert);
 
 router.post('/get_image_url', function (req, res, next) {
 
-    console.log(req.body.urlImage);
-
     let img = req.body.urlImage; // whatever we receive from the browser
-// Set the headers
-    let headers = {
-        method: 'get',
-    }
     let b ;
     fetch(img)
         .then(response => response.buffer())
@@ -35,16 +29,6 @@ router.post('/get_image_url', function (req, res, next) {
             res.setHeader('Content-Type', 'application/json');
             res.json(b);
         })
-
-
-
-
-
-
-
-
-
-
 });
 
 module.exports = router;
