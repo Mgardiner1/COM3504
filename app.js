@@ -16,7 +16,6 @@ app.set('view engine', 'ejs');
 
 
 
-
 app.use(logger('dev'));
 //app.use(express.json({limit: '10mb'}));
 //app.use(express.urlencoded({ limit: '10mb', extended: false }));
@@ -27,6 +26,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+
+// Swagger setup
+const swaggerUi = require('swagger-ui-express');
+const openApiDocumentation = require('./swagger/swaggerDocumentation.json');
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiDocumentation));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

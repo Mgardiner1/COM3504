@@ -1,0 +1,166 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "version": "1.0.0",
+    "title": "COM3504 Assignment G13",
+    "description": "Secret Agent API",
+    "termsOfService": "http://localhost:3000/terms/",
+    "contact": {
+      "name": "DCS",
+      "email": "dcs@sheffield.ac.uk",
+      "url": "https://www.sheffield.ac.uk/dcs"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/",
+      "description": "The only local server"
+    }
+  ],
+  "paths": {
+    "/get_image'": {
+      "post": {
+        "tags": [
+          "Get Image"
+        ],
+        "description": "Returns an image from the database based upon the name entered",
+        "operationId": "get_image",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/title"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Retrieved image successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Image"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Image not found with the specified authors name",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "message": "No image created by the author found in the database",
+                  "internal_code": "incorrect_parameter"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error retrieving the image",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/upload_image": {
+      "post": {
+        "tags": [
+          "Upload Image"
+        ],
+        "description": "Insert an image into the database",
+        "operationId": "upload_image",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Image"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "The image was successfully inserted into the database"
+          },
+          "403": {
+            "description": "No image was sent",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "title": {
+        "type": "string",
+        "description": "Title of an image",
+        "example": "Sheffield from above"
+      },
+      "description": {
+        "type": "string",
+        "description": "Description of an image",
+        "example": "A picture of Sheffield from a plane I was piloting in summer 2015"
+      },
+      "author": {
+        "type": "string",
+        "description": "Author of the picture",
+        "example": "John Smith"
+      },
+      "image_blob": {
+        "type": "string",
+        "description": "A Blob containing the image"
+      },
+      "Image": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "$ref": "#/components/schemas/title"
+          },
+          "description": {
+            "$ref": "#/components/schemas/description"
+          },
+          "author": {
+            "$ref": "#/components/schemas/author"
+          },
+          "image_blob": {
+            "$ref": "#/components/schemas/image_blob"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "internal_code": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
