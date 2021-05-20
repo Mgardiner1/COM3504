@@ -13,6 +13,7 @@
     <script src="/javascripts/index.js"></script>
     <script src="/javascripts/canvas.js"></script>
     <script src="/javascripts/photos.js"></script>
+    <script src="/javascripts/upload.js"></script>
     <script src="/javascripts/database.js" type="module"></script>
     <script type="application/javascript" src="/javascripts/knowledgeGraph.js"></script>
 
@@ -44,16 +45,22 @@
         <canvas id="streamCanvas" style="display:none;"></canvas>
         <button id="takePhoto">Take Photo</button>
 
-        <div id='imageUpload' style="display:none;">
+        <div id='imageForm' style="display:none;">
             <label for="imageTitle">Image Title:</label><br>
             <input type="text" id="imageTitle" maxlength="50"></input><br>
             <label for="imageDesc">Image Description:</label><br>
             <textarea id="imageDesc" rows="4" cols="50" maxlength="200"></textarea><br>
             <label for="imageAuthor">Author:</label><br>
             <input type="text" id="imageAuthor" maxlength="50"></input><br>
-            <button id="uploadPhoto" onclick="sendImage()">Upload Photo</button>
         </div>
+        <button id="uploadCapturePhoto" onclick="sendImage()" style="display:none">Upload Screenshot</button>
     </div>
+
+    <div id = 'imageUpload'>
+        <label for="imgInput">Choose an Image</label>
+        <input type = "file" id = "imgInput" accept = "image/*" onchange="showImgForm('local')">
+    </div>
+    <button style="display:none" id = "uploadLocalPhoto" onclick="getFile()">Upload Local Image</button>
     <div id="database_images" style="display:block">
 
         <label for="imageTitle">Search for Image by Author:</label><br>
