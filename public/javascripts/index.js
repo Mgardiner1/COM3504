@@ -62,23 +62,19 @@ function sendChatText() {
  * used to connect to a room. It gets the user name and room number from the
  * interface
  */
-function connectToRoom() {
+async function connectToRoom() {
 
-    const formArray= $("form").serializeArray();
-    const data={};
-    for (let index in formArray) {
-        data[formArray[index].name] = formArray[index].value;
-    }
     roomNo = document.getElementById('roomNo').value;
     name = document.getElementById('name').value;
     let imageUrl = document.getElementById('image_url').value;
 
-    sendURL(data);
     if (name && roomNo && imageUrl) {
-        //join the room
-        socket.emit('create or join', roomNo, name);
-        initCanvas(socket, imageUrl);
-        hideLoginInterface(roomNo, name);
+
+        let data = JSON.stringify({urlImage: imageUrl});
+
+        await sendURL(data);
+        //console.log(image);
+
     } else {
         document.getElementById("error").textContent = "Please complete all fields";
     }
@@ -91,10 +87,15 @@ function sendURL(data) {
         contentType: 'application/json',
         dataType: 'json',
         type: 'POST',
-        data: JSON.stringify(data),
+        data: data,
+
         success: function (dataR) {
-            //response is not important
-            image =  dataR;
+            imageBase = dataR;
+            console.log(imageBase);
+            socket.emit('create or join', roomNo, name);
+            initCanvas(socket, document.getElementById('image_url').value);
+            hideLoginInterface(roomNo, name);
+
         },
         // catch errors
         error: function (err) {
@@ -103,6 +104,7 @@ function sendURL(data) {
         }
     });
 }
+
 
 function newImage(){
     let imageUrl = document.getElementById('url').value;

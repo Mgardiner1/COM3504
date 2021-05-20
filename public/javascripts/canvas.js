@@ -31,8 +31,6 @@ function initCanvas(sckt, imageUrl) {
     ctx = cvx.getContext('2d');
     ctx.save();
 
-    imageBase = cvx.toDataURL();
-
 
 
 

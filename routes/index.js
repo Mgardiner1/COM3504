@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var image = require('../controllers/images');
-var fs = require('fs');
+const fetch = require('node-fetch');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -18,8 +18,26 @@ router.post('/upload_image', image.insert);
 
 router.post('/get_image_url', function (req, res, next) {
 
-    console.log(req.body.image_url);
-    let blob = fetch(req.body.image_url).then(r => r.blob());
+    console.log(req.body.urlImage);
+
+    let img = req.body.urlImage; // whatever we receive from the browser
+// Set the headers
+    let headers = {
+        method: 'get',
+    }
+    let b ;
+    fetch(img)
+        .then(response => response.buffer())
+        .then(buffer => {
+            // Then create a local URL for that image and print it
+            b = buffer.toString('base64');
+            console.log(b);
+            res.setHeader('Content-Type', 'application/json');
+            res.json(b);
+        })
+
+
+
 
 
 
