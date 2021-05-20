@@ -31,10 +31,6 @@ function initCanvas(sckt, imageUrl) {
     ctx = cvx.getContext('2d');
     ctx.save();
 
-
-
-
-
     // event on the canvas when the mouse is on it
     canvas.on('mousemove mousedown mouseup mouseout', function (e) {
         let color = document.getElementById('colorOptions').value;
@@ -114,7 +110,7 @@ function initCanvas(sckt, imageUrl) {
                 drawImageScaled(img, cvx, ctx);
                 // hide the image element as it is not needed
                 img.style.display = 'none';
-                addData({'image': imageBase, 'room': document.getElementById('roomNo').value, 'annotations': [], 'chat': []});
+                addData({'image': imageBase, 'room': document.getElementById('roomNo').value, 'annotations': [], 'chat': [], 'knowledge': []});
 
             }
         }, 10);

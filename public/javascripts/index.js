@@ -34,6 +34,8 @@ function init() {
             .register('./service-worker.js')
             .then(function() { console.log('Service Worker Registered'); });
     }
+
+
     //loadData(false);
 }
 

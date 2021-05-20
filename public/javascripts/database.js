@@ -19,6 +19,7 @@ async function initDatabase(){
                     idb.createIndex('room', 'room', {unique: false});
                     idb.createIndex('annotations', 'annotations', {unique: false});
                     idb.createIndex('chat', 'chat', {unique: false});
+                    idb.createIndex('knowledge', 'knowledge', {unique: false});
 
                 }
             }
@@ -41,13 +42,12 @@ async function addData(data) {
             let tx = await db.transaction(STORE_NAME, 'readwrite');
             let store = await tx.objectStore(STORE_NAME);
             let obj = await search('image', data.image, data.room, store);
-            console.log(data.image);
-            console.log(data.room);
 
             if(obj){
                 store.delete(obj.id);
                 let annotations = obj.annotations;
                 let chat = obj.chat;
+                let knowledge = obj.knowledge;
 
                 await store.put(data);
                 for(let i = 0; i < annotations.length; i++){
@@ -55,6 +55,14 @@ async function addData(data) {
                 }
                 for(let i = 0; i < chat.length; i++){
                     writeOnHistory(chat[i]);
+                }
+                for(let i = 0; i < knowledge.length; i++){
+                    /*await createPanel(knowledge[i][0], knowledge[i][1], knowledge[i][2], knowledge[i][3], knowledge[i][4], knowledge[i][5]);
+                    await storeOther('knowledge', [knowledge[i][0], knowledge[i][1], knowledge[i][2], knowledge[i][3], knowledge[i][4], knowledge[i][5]], imageBase, document.getElementById('roomNo'));
+                    socket.emit('knowledge', knowledge[i][0], knowledge[i][1], knowledge[i][2], knowledge[i][3], knowledge[i][4], knowledge[i][5]);
+                    *
+                     */
+                    await selectItem(knowledge[i]);
                 }
             }
             if(!obj){
@@ -89,11 +97,13 @@ async function storeOther(name, data, image, room) {
         try{
             let tx = await db.transaction(STORE_NAME, 'readwrite');
             let store = await tx.objectStore(STORE_NAME);
-
             let obj = await search(name, image, room.value, store);
             if(obj){
                 if(name === 'annotations') {
                     obj.annotations.push(data);
+                }
+                else if(name == 'knowledge'){
+                    obj.knowledge.push(data);
                 }
                 else{
                     obj.chat.push(data);
@@ -104,7 +114,7 @@ async function storeOther(name, data, image, room) {
 
         } catch(error) {
             console.log(error);
-            localStorage.setItem(data.image + "-"+data.room, JSON.stringify(data));
+            //localStorage.setItem(data.image + "-"+data.room, JSON.stringify(data));
         };
     }
     else localStorage.setItem(data.image + "-"+data.room, JSON.stringify(data));
@@ -125,7 +135,6 @@ async function clearAnnotations(image, room) {
             let store = await tx.objectStore(STORE_NAME);
 
             let obj = await search("annotations", image, room, store);
-            console.log(obj);
             obj.annotations = [];
             await store.put(obj);
 
@@ -138,7 +147,33 @@ async function clearAnnotations(image, room) {
     }
     //else localStorage.setItem(data.image + "-"+data.room, JSON.stringify());
 }
-window.clearAnnotations= clearAnnotations
+window.clearAnnotations = clearAnnotations;
+/**
+ * Gets knowledge graph information from IndexedDB
+ * @param image The base64 representation of the image
+ * @param room The room number
+ */
+
+async function getKnowledge(image, room) {
+    if (!db)
+        await initDatabase();
+    if (db) {
+        try{
+            let tx = await db.transaction(STORE_NAME, 'readwrite');
+            let store = await tx.objectStore(STORE_NAME);
+            let obj = await search("knowledge", image, room, store);
+            await tx.done;
+
+            return obj.knowledge;
+
+        } catch(error) {
+            console.log(error);
+            //localStorage.setItem(data.image + "-"+data.room, JSON.stringify());
+        };
+    }
+    //else localStorage.setItem(data.image + "-"+data.room, JSON.stringify());
+}
+window.getKnowledge= getKnowledge;
 /**
  * Search to see if a particular image/room combination exists within IndexedDb
  * @param name Name of the index being used to search

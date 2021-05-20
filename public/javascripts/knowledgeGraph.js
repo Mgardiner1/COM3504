@@ -43,15 +43,21 @@ function widgetInit(){
  * @TODO write the JSON-LD to socket.io for display to other users
  */
 async function selectItem(event){
-    let row= event.row;
-
+    console.log(event);
+    let row;
+    if(event.row) {
+        row = event.row;
+    }
+    else{
+        row = event;
+    }
     // get the current color
     let color = document.getElementById('colorOptions').value;
     // put information into a table
     await createPanel(row.id, row.name, row.rc, row.qc, color)
     // Display to other users - send information other users
     room = document.getElementById('roomNo').value;
-
+    await storeOther('knowledge', row, imageBase, document.getElementById('roomNo'));
     socket.emit('knowledge', room, row.id, row.name, row.rc, row.qc, color);
 }
 
