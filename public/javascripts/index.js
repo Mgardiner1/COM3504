@@ -76,6 +76,34 @@ function connectToRoom() {
     }
 }
 
+function newImage(){
+    let imageUrl = document.getElementById('url').value;
+    if(imageUrl){
+
+        // Remove the canvas and image elements
+        document.getElementById("url").value = ""
+        let canvasDiv = document.getElementById("canvas_div")
+        let canvas = document.getElementById("canvas");
+        let img = document.getElementById("image");
+        canvasDiv.removeChild(canvas);
+        canvasDiv.removeChild(img);
+
+        // Recreate canvas and image elements
+        let newElement = document.createElement("img", 'height="100%"');
+        newElement.id = "image"
+        canvasDiv.appendChild(newElement);
+        newElement = document.createElement("canvas");
+        newElement.id = "canvas"
+        canvasDiv.appendChild(newElement);
+        socket.emit('create or join', roomNo, name)
+
+        initCanvas(socket, imageUrl);
+        hideLoginInterface(roomNo, name);
+
+    }
+}
+
+
 /**
  * it appends the given html text to the history div
  * this is to be called when the socket receives the chat message (socket.on ('message'...)

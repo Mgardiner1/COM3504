@@ -28,6 +28,7 @@ function initCanvas(sckt, imageUrl) {
     cvx = document.getElementById('canvas');
     let img = document.getElementById('image');
     ctx = cvx.getContext('2d');
+    ctx.save();
     img.src = imageUrl;
     imageBase = cvx.toDataURL();
 
@@ -119,6 +120,14 @@ function initCanvas(sckt, imageUrl) {
     });
 
 }
+
+function resetCanvas(){
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Restore the transform
+    ctx.restore(); //CLEARS THE SPECIFIC CANVAS COMPLETELY FOR NEW DRAWING
+}
+
 
 /**
  * called when it is required to draw the image on the canvas. We have resized the canvas to the same image size
