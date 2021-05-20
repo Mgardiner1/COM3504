@@ -104,14 +104,14 @@ function queryMainEntity(id, type){
 }
 
 async function knowledgeOn() {
-    document.getElementById('typeForm').style.display = 'block';
+    document.getElementById('knowledgeForm').style.display = 'block';
+    document.getElementById('knowledgePanel').style.display = 'block';
     document.getElementById('knowledgeOn').style.display = 'none';
     document.getElementById('knowledgeOff').style.display = 'block';
 }
 
 async function knowledgeOff() {
-    document.getElementById('typeForm').style.display = 'none';
-    document.getElementById('widget').style.display = 'none';
+    document.getElementById('knowledgeForm').style.display = 'none';
     document.getElementById('knowledgeOn').style.display = 'block';
     document.getElementById('knowledgeOff').style.display = 'none';
 }

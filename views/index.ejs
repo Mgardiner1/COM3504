@@ -34,55 +34,57 @@
         <p style=" width: 100%"><label for="image_url"> Image (URL) </label><input type="text" id="image_url" name="image_url"></p>
         <button id="connect" onclick="connectToRoom()">Connect</button>
     </form>
+    <div id="photoCapture">
+        <div id='cameraSelect'>
+            <select id="cameraOptions" onload="selectCamera()"></select>
+            <button id="sourceSelect" onclick="sourceSelect()">Start Camera</button>
+        </div>
+        <video id='video' autoplay></video>
+        <img src=''>
+        <canvas id="streamCanvas" style="display:none;"></canvas>
+        <button id="takePhoto">Take Photo</button>
+
+        <div id='imageUpload' style="display:none;">
+            <label for="imageTitle">Image Title:</label><br>
+            <input type="text" id="imageTitle" maxlength="50"></input><br>
+            <label for="imageDesc">Image Description:</label><br>
+            <textarea id="imageDesc" rows="4" cols="50" maxlength="200"></textarea><br>
+            <label for="imageAuthor">Author:</label><br>
+            <input type="text" id="imageAuthor" maxlength="50"></input><br>
+            <button id="uploadPhoto" onclick="sendImage()">Upload Photo</button>
+        </div>
+    </div>
+    <div id="database_images" style="display:block">
+
+        <label for="imageTitle">Search for Image by Author:</label><br>
+        <input type="text" id="authorSearch">
+        <button id="authorSearchInput" onclick="displayDBImages()">Find Image</button>
+        <table id="image_table">
+            <tr>
+                <th>Image</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Author</th>
+                <th>Choose Image</th>
+            </tr>
+        </table>
+    </div>
     <p id = "error"></div>
 </div>
 
-<div id="photoCapture">
-    <div id='cameraSelect'>
-        <select id="cameraOptions" onload="selectCamera()"></select>
-        <button id="sourceSelect" onclick="sourceSelect()">Start Camera</button>
-    </div>
-    <video id='video' autoplay></video>
-    <img src=''>
-    <canvas id="streamCanvas" style="display:none;"></canvas>
-    <button id="takePhoto">Take Photo</button>
-
-    <div id='imageUpload' style="display:none;">
-        <label for="imageTitle">Image Title:</label><br>
-        <input type="text" id="imageTitle" maxlength="50"></input><br>
-        <label for="imageDesc">Image Description:</label><br>
-        <textarea id="imageDesc" rows="4" cols="50" maxlength="200"></textarea><br>
-        <label for="imageAuthor">Author:</label><br>
-        <input type="text" id="imageAuthor" maxlength="50"></input><br>
-        <button id="uploadPhoto" onclick="sendImage()">Upload Photo</button>
-    </div>
-</div>
-
-<div id="database_images" style="display:block">
-
-    <label for="imageTitle">Search for Image by Author:</label><br>
-    <input type="text" id="authorSearch">
-    <button id="authorSearchInput" onclick="displayDBImages()">Find Image</button>
-    <table id="image_table">
-        <tr>
-            <th>Image</th>
-            <th>Title</th>
-            <th>Description</th>
-            <th>Author</th>
-        </tr>
-    </table>
-</div>
 
 <div id="chat_interface" style="display: none">
-    <div id = "knowledgePanel" style="display:block">
-        <h5>Search the Knowledge Graph</h5>
-        <div class="myRow" id="typeForm" style="display:none">
-            <label for="myType">Type: </label><input type="text" id="myType">
-            <button id = "myType" onclick="widgetInit()">Set type</button>
-        </div>
-        <div class="myRow" id='widget' style="display: none">
-            <label for="myInput">Search for: </label><input type="text" id="myInput">
-            <div class="myRow" id="typeSet"></div>
+    <div id = "knowledgePanel">
+        <div id="knowledgeForm" style="display: none">
+            <h5>Search the Knowledge Graph</h5>
+            <div class="myRow" id="typeForm">
+                <label for="myType">Type: </label><input type="text" id="myType">
+                <button id = "myType" onclick="widgetInit()">Set type</button>
+            </div>
+            <div class="myRow" id='widget' style="display: none">
+                <label for="myInput">Search for: </label><input type="text" id="myInput">
+                <div class="myRow" id="typeSet"></div>
+            </div>
         </div>
         <div id="resultPanels">
 

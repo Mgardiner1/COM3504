@@ -51,7 +51,8 @@ function gotStream(stream) {
         await ctx.drawImage(mediaElement, x, y, 480 * screenShotScale, 270 * screenShotScale);
         // display snapshot
         document.querySelector('img').src = canvas.toDataURL('image/png');
-        document.getElementById('image_url').value = canvas.toDataURL('image/png')
+        // set the URL in the room setup form to be the base64 image
+        await setURL(canvas.toDataURL('image/png'));
         // hide mediaStream
         mediaElement.style.display = 'none';
         // reset camera options
@@ -124,7 +125,7 @@ async function sendImage() {
     event.preventDefault();
 }
 
-async function displayDBImages() {
+async function clearImageResults() {
     // find any current images
     var rows = document.getElementsByClassName('image_table');
 
@@ -132,12 +133,15 @@ async function displayDBImages() {
     for (i=0; i<rows.length; i++) {
         rows[i].parentElement.remove();
     }
-
+}
+async function displayDBImages() {
     // get the value of the authorSearch text input
     var data = JSON.stringify({
         author: document.getElementById('authorSearch').value
     });
 
+    // clear previous results if any
+    await clearImageResults();
     // query the server with that author
     await getImageAJAX("/get_image", data);
 
@@ -180,18 +184,38 @@ async function getImageAJAX(url, data) {
                 const tableClass = 'image_table';
                 // insert image properties into table
                 for (i =0; i < dataR.length; i++) {
+                    // create a new row of class tableClass
                     var row = table.insertRow();
                     row.className = tableClass;
+                    // create required cells within row
                     var imgCell = row.insertCell(0)
                     var titleCell = row.insertCell(1);
                     var descriptionCell = row.insertCell(2);
                     var authorCell = row.insertCell(3);
-                    const styleOptions = "height:100px;width:150px;"
-
+                    var buttonCell = row.insertCell(4);
+                    // set image thumbnail size
+                    const styleOptions = "height:100px;width:150px;";
+                    // fill cells
                     imgCell.innerHTML = "<img src=" + dataR[i].image_blob + " style = " + styleOptions+ "></img>";
                     titleCell.innerHTML = dataR[i].title;
                     descriptionCell.innerHTML = dataR[i].description;
                     authorCell.innerHTML = dataR[i].author;
+
+
+                    let url = dataR[i].image_blob;
+                    // create a select image button
+                    let button = document.createElement('button');
+                    button.textContent = "Select";
+                    // add to button cell
+                    buttonCell.appendChild(button);
+                    // create the onclick function
+                    button.onclick = function() {
+                        // set the url of the room form to be the base64 image blob
+                        document.getElementById('image_url').value = url;
+                        // clear the results to tidy up the page
+                        clearImageResults();
+
+                    }
 
                 }
 
@@ -204,7 +228,12 @@ async function getImageAJAX(url, data) {
         }
     });
 }
+
+function setURL(url) {
+    document.getElementById('image_url').value = url;
+}
 /*
+
 
 async function initStreamCanvas() {
     var button = document.getElementById('takePhoto');
