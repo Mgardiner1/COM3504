@@ -57,7 +57,7 @@ function gotStream(stream) {
         mediaElement.style.display = 'none';
         // reset camera options
         document.getElementById('cameraSelect').style.display = 'block';
-        document.getElementById('imageUpload').style.display = 'block';
+        showImgForm('captured');
         document.getElementById('takePhoto').style.display = 'none';
         // stop the mediaStream
         await stopCamera(stream);
@@ -106,20 +106,67 @@ async function sourceSelect() {
     await prepareVideo(source);
     // hides dropdown menu and adds screenshot button
     document.getElementById('cameraSelect').style.display = 'none';
-    document.getElementById('imageUpload').style.display = 'none';
+    hideImgForm('captured');
     document.getElementById('takePhoto').style.display = 'block';
+}
+
+// functions to show and hide and image attribute input form
+function showImgForm(type) {
+    // if it is an image capture
+    if (type == "captured") {
+        // hide the local image attribute form it displayed
+        hideImgForm('local');
+        // show the captured image upload button
+        document.getElementById('uploadCapturePhoto').style.display = 'block';
+    } else {
+        // hide the caputured image form if it is displayed
+        hideImgForm('captured');
+        // show the local image upload button
+        document.getElementById('uploadLocalPhoto').style.display = 'block'
+    }
+    // show the rest of the form
+    document.getElementById('imageForm').style.display = 'block';
+}
+
+function hideImgForm(type) {
+    // if it is an image capture
+    if (type == "captured") {
+        // hide any displayed image
+        document.querySelector('img').src = "";
+        // hide the upload button for image capture
+        document.getElementById('uploadCapturePhoto').style.display = 'none';
+    // if it is a local upload
+    } else if (type=="local") {
+
+        // hide the local upload image button
+        document.getElementById('uploadLocalPhoto').style.display = 'none';
+    }
+
+    // hide the image attribute form
+    document.getElementById('imageForm').style.display = 'none';
+}
+
+// function to read the image attribute form
+function readImgForm() {
+    // get all of the paramaters and store in variable data
+    var data = {
+        title: document.getElementById('imageTitle').value,
+        description: document.getElementById('imageDesc').value,
+        author: document.getElementById('imageAuthor').value
+    };
+
+    return data;
 }
 // function to send an image to MongoDB
 async function sendImage() {
     // get the image stream canvas at the current time
     var canvas = document.getElementById('streamCanvas');
     // capture data from the stream and input boxes
-    var data = JSON.stringify({
-        title: document.getElementById('imageTitle').value,
-        description: document.getElementById('imageDesc').value,
-        author: document.getElementById('imageAuthor').value,
-        image_blob: canvas.toDataURL('image/png')
-    });
+    var dataForm = readImgForm();
+
+    dataForm.image_blob = canvas.toDataURL('image/png');
+
+    var data = JSON.stringify(dataForm)
     // send data to server
     await sendImageAJAX("/upload_image", data);
     event.preventDefault();
@@ -233,6 +280,7 @@ function setURL(url) {
     document.getElementById('image_url').value = url;
 }
 /*
+
 
 
 async function initStreamCanvas() {
