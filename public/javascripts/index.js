@@ -148,7 +148,8 @@ function recreateCanvas(){
     canvasDiv.removeChild(img);
 
     // Recreate canvas and image elements
-    let newElement = document.createElement("img", 'height="100%"');
+    let newElement = document.createElement("img");
+    newElement.style.height = "100%";
     newElement.id = "image"
     canvasDiv.appendChild(newElement);
     newElement = document.createElement("canvas");
