@@ -34,9 +34,10 @@ async function initDatabase(){
 
 window.initDatabase= initDatabase;
 /**
- * Add image and room data to index db the first time a room/image combination is used
- * @param data Object containing image in base64 format, room number and empty arrays for
- *              annotations and chat.
+ * Add image and room data to index db when a room/image combination is used
+ * @param data Object containing image in base64 format, room number, arrays for
+ *              annotations, chat and knowledge graph and strings for next and
+ *              previous image.
  */
 async function addData(data) {
     if (!db)
@@ -48,28 +49,33 @@ async function addData(data) {
             let obj = await search('image', data.image, data.room, store);
 
             if(obj){
+
+                // Update data object
                 store.delete(obj.id);
                 let annotations = obj.annotations;
                 let chat = obj.chat;
                 let knowledge = obj.knowledge;
                 let prev = obj.previousImage;
                 let next = obj.nextImage;
-
                 if(next) {
                     data.nextImage = next;
                 }
                 if(prev) {
                     data.previousImage = prev;
                 }
-
-
                 await store.put(data);
+
+                // Put annotations on the image
                 for(let i = 0; i < annotations.length; i++){
                     drawOnCanvas(imageBase, ctx, parseInt(annotations[i][0]), parseInt(annotations[i][1]), parseInt(annotations[i][2]), annotations[i][3], annotations[i][4], annotations[i][5], annotations[i][6], annotations[i][7]);
                 }
+
+                // Display the chat
                 for(let i = 0; i < chat.length; i++){
                     writeOnHistory(chat[i]);
                 }
+
+                // Display knowledge graph
                 for(let i = 0; i < knowledge.length; i++){
                     await selectItem(knowledge[i]);
                 }
@@ -94,7 +100,7 @@ window.addData= addData
 
 /**
  * Add annotations/chat messages to IndexedDB
- * @param name Either annotations or chat
+ * @param name Either name of the column that data will be stored in
  * @param data The data to be added to the IndexedDb record
  * @param image The image being used in the chat room
  * @param room The room number
@@ -140,7 +146,7 @@ async function storeOther(name, data, image, room) {
 window.storeOther= storeOther
 
 /**
- * Add annotations/chat messages to IndexedDB
+ * Clears annotations in IndexedDB
  * @param image The base64 representation of the image that has been annotated
  * @param room The room number
  */
@@ -166,12 +172,12 @@ async function clearAnnotations(image, room) {
     //else localStorage.setItem(data.image + "-"+data.room, JSON.stringify());
 }
 window.clearAnnotations = clearAnnotations;
+
 /**
- * Gets knowledge graph information from IndexedDB
+ * Gets whether an image is before or after the current one
  * @param image The base64 representation of the image
  * @param room The room number
  */
-
 async function nextPreviousIndexed(image, room) {
     if (!db)
         await initDatabase();
@@ -201,7 +207,11 @@ async function nextPreviousIndexed(image, room) {
     //else localStorage.setItem(data.image + "-"+data.room, JSON.stringify());
 }
 window.nextPreviousIndexed = nextPreviousIndexed;
-
+/**
+ * Gets knowledge graph information
+ * @param image The base64 representation of the image
+ * @param room The room number
+ */
 async function getKnowledge(image, room) {
     if (!db)
         await initDatabase();
@@ -222,7 +232,12 @@ async function getKnowledge(image, room) {
     //else localStorage.setItem(data.image + "-"+data.room, JSON.stringify());
 }
 window.getKnowledge= getKnowledge;
-
+/**
+ * Gets the next or previous image from IDB
+ * @param nextPrevImg boolean. True = previous image, False = next image
+ * @param image The base64 representation of the image
+ * @param room The room number
+ */
 async function getNextPreviousImage(nextPrevImg, image, room) {
     if (!db)
         await initDatabase();

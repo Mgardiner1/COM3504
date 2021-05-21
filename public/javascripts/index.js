@@ -67,15 +67,18 @@ async function connectToRoom() {
 
     //Checks if parameters are defined
     if (name && roomNo && image_url) {
+
+        // Checks if the image url is base64
         if(image_url.substring(0,4) == "data"){
-            //connects to (new) room
+
+            // Connects to the room
             imageBase = image_url;
             socket.emit('create or join', roomNo, name);
             initCanvas(socket, imageBase, "");
             hideLoginInterface(roomNo, name);
         }
         else {
-            //stores data sent into idb
+            // Get the base64 representation of an image if it is in url format
             imageUrl = image_url;
             let data = JSON.stringify({urlImage: image_url});
             await sendURL(data, false, "", false);
@@ -87,10 +90,9 @@ async function connectToRoom() {
 }
 
 /**
- * called when the Send button is pressed. It gets the URL to send from the interface
- * and sends the user to room if successful
- *  * @param data the URL data
- *  * @param nextRoom the next room the user wants to enter
+ * Used to send the url to the server to get the base64 representation of the image
+ *  * @param data the URL
+ *  * @param nextRoom boolean to check if the user is moving to the next room
  *  * @param oldImage the old image the user was looking at
  *  * @param moving boolean, true if the user is trying to move rooms
  */
@@ -104,8 +106,9 @@ function sendURL(data, nextRoom, oldImage, moving) {
         data: data,
 
         success: async function (dataR) {
-            // URL accepted, sent to new room with image
+            // Get the base64 representation of the image and go to room
             imageBase = dataR;
+            /// Store the next image in the current images indexedDb entry
             if (nextRoom && !moving) {
                 await storeOther("image", [imageBase, "next"], oldImage, roomNo);
             }
@@ -115,7 +118,7 @@ function sendURL(data, nextRoom, oldImage, moving) {
         },
         // catch errors
         error: function (err) {
-            // URL not accepted/ not worked, displays error
+            // URL is not valid
             alert('Error with AJAX: ' + err.status + ':' + err.statusText);
 
         }
@@ -130,6 +133,7 @@ async function newImage(){
     let oldImage = imageBase;
 
     if(image_url){
+
         recreateCanvas();
         removeChat();
         removeKnowledgeGraph();
@@ -150,7 +154,7 @@ async function newImage(){
 }
 
 /**
- * Called when checking the previous links
+ * Checks whether there is a previous or next room. If there is display the relevant buttons
  */
 async function checkNextPrevious(image){
 
