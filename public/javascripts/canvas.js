@@ -21,6 +21,8 @@ async function initCanvas(sckt, imageUrl, oldImage) {
     userId = document.getElementById('who_you_are').value; // this isn't working for some reason
     room = document.getElementById('roomNo').value;
 
+    selectCamera('Room');
+
     //sets up original values for use for each client
     let flag = false,
         prevX, prevY, currX, currY = 0;

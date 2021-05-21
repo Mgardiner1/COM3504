@@ -29,7 +29,7 @@ async function prepareVideo(camid, location) {
 // displays the stream and waits for user to take photo
 function gotStream(stream, location) {
     // create mediaElement on video tag and display stream
-    let mediaElement = document.getElementById('video');
+    let mediaElement = document.getElementById('video'+location);
     console.log('video'+location);
     mediaElement.style.display = 'block';
     mediaElement.srcObject = stream;
@@ -52,7 +52,14 @@ function gotStream(stream, location) {
         // take snapshot
         await ctx.drawImage(mediaElement, x, y, 480 * screenShotScale, 270 * screenShotScale);
         // display snapshot
-        document.querySelector('img').src = canvas.toDataURL('image/png');
+        if (location == 'Room') {
+            document.getElementById('image_urlRoom').value = canvas.toDataURL('image/png');
+            document.getElementById('imgRoom').src = canvas.toDataURL('image/png');
+        }
+        else {
+            document.querySelector('img').src = canvas.toDataURL('image/png');
+        }
+
         // set the URL in the room setup form to be the base64 image
         await setURL(canvas.toDataURL('image/png'));
         // hide mediaStream
