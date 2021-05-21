@@ -8,20 +8,20 @@ let thickness = 4;
 let imageBase;
 let ctx;
 let cvx;
-//let chat= io.connect('/chat');
-//let pic= io.connect('/pic');
 
 /**
  * it inits the image canvas to draw on. It sets up the events to respond to (click, mouse on, etc.)
- * it is also the place where the data should be sent  via socket.io
+ * it is also the place where the data is sent via socket.io
  * @param sckt the open socket to register events on
- * @param imageUrl teh image url to download
+ * @param imageUrl the image url to download
+ * @param oldImage previous image url for transitioning to new image
  */
 async function initCanvas(sckt, imageUrl, oldImage) {
     socket = sckt;
     userId = document.getElementById('who_you_are').value; // this isn't working for some reason
     room = document.getElementById('roomNo').value;
 
+    //sets up original values for use for each client
     let flag = false,
         prevX, prevY, currX, currY = 0;
     let canvas = $('#canvas');
@@ -49,14 +49,13 @@ async function initCanvas(sckt, imageUrl, oldImage) {
         if (e.type === 'mousemove') {
             if (flag) {
                 drawOnCanvas(imageBase, ctx, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness);
-                // draw on the canvas, you may want to let everyone know via socket.io (socket.emit...)  by sending them
-                // room, userId, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness
+                // draw on the canvas, lets everyone know via socket.io by sending them drawOnCanvas data
                 socket.emit('pic', room, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness);
             }
         }
     });
 
-    // this is code left in case you need to  provide a button clearing the canvas (it is suggested that you implement it)
+    // Captures button click for clearing the canvas for everyone in room
     $('.canvas-clear').on('click', function (e) {
         let c_width = canvas.width
         let c_height = canvas.height
@@ -65,7 +64,7 @@ async function initCanvas(sckt, imageUrl, oldImage) {
         img.height = c_height;
         img.width = c_width;
         drawImageScaled(img, cvx, ctx);
-        // @todo if you clear the canvas, you want to let everyone know via socket.io (socket.emit...)
+        // communicates that a client has cleared the canvas everyone via socket.io
         socket.emit('clear', room)
     });
 
@@ -110,6 +109,7 @@ async function initCanvas(sckt, imageUrl, oldImage) {
                 drawImageScaled(img, cvx, ctx);
                 // hide the image element as it is not needed
                 img.style.display = 'none';
+                //Adding past image data to idb for follow checking paths
                 await addData({
                     'image': imageBase,
                     'room': document.getElementById('roomNo').value,
@@ -127,11 +127,13 @@ async function initCanvas(sckt, imageUrl, oldImage) {
 
 }
 
+/**
+ * called when to clear the current canvas for new a drawing
+ */
 function resetCanvas(){
-
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     // Restore the transform
-    ctx.restore(); //CLEARS THE SPECIFIC CANVAS COMPLETELY FOR NEW DRAWING
+    ctx.restore(); // Clears the specific canvas completely for new drawing
 }
 
 
@@ -149,8 +151,6 @@ function drawImageScaled(img, canvas, ctx) {
     let x = (canvas.width / 2) - (img.width / 2) * scale;
     let y = (canvas.height / 2) - (img.height / 2) * scale;
     ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
-
-
 }
 
 
@@ -167,10 +167,11 @@ function drawImageScaled(img, canvas, ctx) {
  * @param currY the ending Y coordinate
  * @param color of the line
  * @param thickness of the line
+ * @param dashed determines if line is dashed
  */
 async function drawOnCanvas(image, ctx, canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness, dashed=false) {
 
-    //get the ration between the current canvas and the one it has been used to draw on the other comuter
+    //get the ration between the current canvas and the one it has been used to draw on the other computer
     let ratioX= cvx.width/canvasWidth;
     let ratioY= cvx.height/canvasHeight;
 
@@ -182,6 +183,7 @@ async function drawOnCanvas(image, ctx, canvasWidth, canvasHeight, prevX, prevY,
     if (dashed) {
         ctx.setLineDash([10,5]);
     }
+    //draws path
     ctx.beginPath();
     ctx.moveTo(prevX, prevY);
     ctx.lineTo(currX, currY);
@@ -190,6 +192,7 @@ async function drawOnCanvas(image, ctx, canvasWidth, canvasHeight, prevX, prevY,
     ctx.stroke();
     ctx.closePath();
 
+    //Stores annotation data in idb
     let data = [canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness];
     await storeOther('annotations', data, image, roomNo);
 }
