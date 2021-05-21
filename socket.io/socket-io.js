@@ -1,4 +1,6 @@
-
+/**
+ * socket-io functions for all of solution. Allows communication between clients
+ */
 exports.init = function(io) {
   io.sockets.on('connection', function (socket) {
       try {
