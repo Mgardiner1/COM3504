@@ -1,4 +1,4 @@
-async function prepareVideo(camid) {
+async function prepareVideo(camid, location) {
     // set session variables
     var session = {
         audio: false,
@@ -18,17 +18,19 @@ async function prepareVideo(camid) {
             //await sleep(1000);
 
             // display the stream
+            console.log(location);
             gotStream(mediaStream, location);
         })
         .catch( function (e) {
-            alert('Not supported on this device. Update your browser: ' + e.name);
+            alert('Not supported on this device. Update your browser: ' + e);
         });
 }
 
 // displays the stream and waits for user to take photo
 function gotStream(stream, location) {
     // create mediaElement on video tag and display stream
-    let mediaElement = document.getElementById('video'+location);
+    let mediaElement = document.getElementById('video');
+    console.log('video'+location);
     mediaElement.style.display = 'block';
     mediaElement.srcObject = stream;
     // listen for #takePhoto button and run snapshot callback when pressed
