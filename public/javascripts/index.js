@@ -72,25 +72,24 @@ async function connectToRoom() {
 
     if (name && roomNo && image_url) {
         if(image_url.substring(0,4) == "data"){
-
             imageBase = image_url;
             socket.emit('create or join', roomNo, name);
-            initCanvas(socket, imageBase);
+            initCanvas(socket, imageBase, "");
             hideLoginInterface(roomNo, name);
 
         }
-        imageUrl = image_url;
-        let data = JSON.stringify({urlImage: image_url});
-
-        await sendURL(data);
-        //console.log(image);
+        else {
+            imageUrl = image_url;
+            let data = JSON.stringify({urlImage: image_url});
+            await sendURL(data, false, "");
+        }
 
     } else {
         document.getElementById("error").textContent = "Please complete all fields";
     }
 }
 
-function sendURL(data) {
+function sendURL(data, nextRoom, oldImage) {
     $.ajax({
         // set params
         url: '/get_image_url',
@@ -101,8 +100,11 @@ function sendURL(data) {
 
         success: function (dataR) {
             imageBase = dataR;
+            if(nextRoom){
+
+            }
             socket.emit('create or join', roomNo, name);
-            initCanvas(socket, imageUrl);
+            initCanvas(socket, imageUrl, oldImage);
             hideLoginInterface(roomNo, name);
 
         },
@@ -115,25 +117,24 @@ function sendURL(data) {
 }
 
 
-function newImage(){
-    var image_url = document.getElementById('image_urlRoom').value;
+async function newImage(){
+    let image_url = document.getElementById('image_urlRoom').value;
+    let oldImage = imageBase;
 
     if(image_url){
         recreateCanvas();
+        await storeOther("image", [image_url, "next"], imageBase, roomNo);
         if(image_url.substring(0,4) == "data"){
-
             imageBase = image_url;
             socket.emit('create or join', roomNo, name);
-            initCanvas(socket, imageBase);
+            initCanvas(socket, imageBase, oldImage);
             hideLoginInterface(roomNo, name);
-
         }
         else {
-            imageUrl = image_url;
+            imageBase = image_url;
             document.getElementById("image_urlRoom").value = ""
-
             let data = JSON.stringify({urlImage: imageUrl});
-            sendURL(data)
+            await sendURL(data, true, oldImage)
         }
     }
 }
@@ -173,7 +174,7 @@ function writeOnHistory(text) {
     document.getElementById('chat_input').value = '';
 
     //name,data, image, room
-    storeOther('chat', text, imageBase, document.getElementById('roomNo'));
+    storeOther('chat', text, imageBase, roomNo);
 
 }
 

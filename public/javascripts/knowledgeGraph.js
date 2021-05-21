@@ -57,7 +57,7 @@ async function selectItem(event){
     await createPanel(row.id, row.name, row.rc, row.qc, color)
     // Display to other users - send information other users
     room = document.getElementById('roomNo').value;
-    await storeOther('knowledge', row, imageBase, document.getElementById('roomNo'));
+    await storeOther('knowledge', row, imageBase, roomNo);
     socket.emit('knowledge', room, row.id, row.name, row.rc, row.qc, color);
 }
 

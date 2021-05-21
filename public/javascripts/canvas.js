@@ -17,7 +17,7 @@ let cvx;
  * @param sckt the open socket to register events on
  * @param imageUrl teh image url to download
  */
-function initCanvas(sckt, imageUrl) {
+function initCanvas(sckt, imageUrl, oldImage) {
     socket = sckt;
     userId = document.getElementById('who_you_are').value; // this isn't working for some reason
     room = document.getElementById('roomNo').value;
@@ -110,7 +110,14 @@ function initCanvas(sckt, imageUrl) {
                 drawImageScaled(img, cvx, ctx);
                 // hide the image element as it is not needed
                 img.style.display = 'none';
-                addData({'image': imageBase, 'room': document.getElementById('roomNo').value, 'annotations': [], 'chat': [], 'knowledge': []});
+                addData({  'image': imageBase,
+                                'room': document.getElementById('roomNo').value,
+                                'annotations': [],
+                                'chat': [],
+                                'knowledge': [],
+                                'previousRoom': oldImage,
+                                'nextRoom': ""
+                });
 
             }
         }, 10);
@@ -188,7 +195,7 @@ function drawOnCanvas(image, ctx, canvasWidth, canvasHeight, prevX, prevY, currX
     ctx.closePath();
 
     let data = [canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness];
-    storeOther('annotations', data, image, document.getElementById('roomNo'));
+    storeOther('annotations', data, image, roomNo);
 }
 /*
 async function imgResize(img, cvx, ctx, canvas) {

@@ -20,6 +20,10 @@ async function initDatabase(){
                     idb.createIndex('annotations', 'annotations', {unique: false});
                     idb.createIndex('chat', 'chat', {unique: false});
                     idb.createIndex('knowledge', 'knowledge', {unique: false});
+                    idb.createIndex('previousImage', 'previousImage', {unique: false});
+                    idb.createIndex('nextImage', 'nextImage', {unique: false});
+
+
 
                 }
             }
@@ -57,11 +61,6 @@ async function addData(data) {
                     writeOnHistory(chat[i]);
                 }
                 for(let i = 0; i < knowledge.length; i++){
-                    /*await createPanel(knowledge[i][0], knowledge[i][1], knowledge[i][2], knowledge[i][3], knowledge[i][4], knowledge[i][5]);
-                    await storeOther('knowledge', [knowledge[i][0], knowledge[i][1], knowledge[i][2], knowledge[i][3], knowledge[i][4], knowledge[i][5]], imageBase, document.getElementById('roomNo'));
-                    socket.emit('knowledge', knowledge[i][0], knowledge[i][1], knowledge[i][2], knowledge[i][3], knowledge[i][4], knowledge[i][5]);
-                    *
-                     */
                     await selectItem(knowledge[i]);
                 }
             }
@@ -85,7 +84,7 @@ window.addData= addData
 
 /**
  * Add annotations/chat messages to IndexedDB
- * @param name Either annotations or char
+ * @param name Either annotations or chat
  * @param data The data to be added to the IndexedDb record
  * @param image The image being used in the chat room
  * @param room The room number
@@ -95,18 +94,28 @@ async function storeOther(name, data, image, room) {
         await initDatabase();
     if (db) {
         try{
+
             let tx = await db.transaction(STORE_NAME, 'readwrite');
             let store = await tx.objectStore(STORE_NAME);
-            let obj = await search(name, image, room.value, store);
+            let obj = await search(name, image, room, store);
+            console.log(obj);
             if(obj){
                 if(name === 'annotations') {
                     obj.annotations.push(data);
                 }
-                else if(name == 'knowledge'){
+                else if(name === 'knowledge'){
                     obj.knowledge.push(data);
                 }
-                else{
+                else if(name === 'chat'){
                     obj.chat.push(data);
+                }
+                else if(data.length == 2){
+                    if(data[1] === "next"){
+                        obj.nextRoom = data[0];
+                    }
+                    else{
+                        obj.previousRoom = data[0];
+                    }
                 }
                 await store.put(obj);
             }
