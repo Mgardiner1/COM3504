@@ -15,7 +15,7 @@ function init() {
     document.getElementById('takePhoto').style.display = 'none';
 
     // set up webcam interface list
-    selectCamera();
+    selectCamera('');
 
     //initialise the socket operations as described in the lectures (room joining, chat message receipt etc.)
     initChatSocket();
@@ -116,18 +116,31 @@ function sendURL(data) {
 
 
 function newImage(){
-    var image_url = document.getElementById('url').value;
+    var image_url = document.getElementById('image_urlRoom').value;
+
     if(image_url){
-        imageUrl = image_url;
         recreateCanvas();
-        let data = JSON.stringify({urlImage: imageUrl});
-        sendURL(data)
+        if(image_url.substring(0,4) == "data"){
+
+            imageBase = image_url;
+            socket.emit('create or join', roomNo, name);
+            initCanvas(socket, imageBase);
+            hideLoginInterface(roomNo, name);
+
+        }
+        else {
+            imageUrl = image_url;
+            document.getElementById("image_urlRoom").value = ""
+
+            let data = JSON.stringify({urlImage: imageUrl});
+            sendURL(data)
+        }
     }
 }
 
 function recreateCanvas(){
     // Remove the canvas and image elements
-    document.getElementById("url").value = ""
+
     let canvasDiv = document.getElementById("canvas_div")
     let canvas = document.getElementById("canvas");
     let img = document.getElementById("image");

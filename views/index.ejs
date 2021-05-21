@@ -37,8 +37,8 @@
     </form>
     <div id="photoCapture">
         <div id='cameraSelect'>
-            <select id="cameraOptions" onload="selectCamera()"></select>
-            <button id="sourceSelect" onclick="sourceSelect()">Start Camera</button>
+            <select id="cameraOptions" onload="selectCamera('')"></select>
+            <button id="sourceSelect" onclick="sourceSelect('')">Start Camera</button>
         </div>
         <video id='video' autoplay></video>
         <img src=''>
@@ -53,19 +53,19 @@
             <label for="imageAuthor">Author:</label><br>
             <input type="text" id="imageAuthor" maxlength="50"></input><br>
         </div>
-        <button id="uploadCapturePhoto" onclick="sendImage()" style="display:none">Upload Screenshot</button>
+        <button id="uploadCapturePhoto" onclick="sendImage('')" style="display:none">Upload Screenshot</button>
     </div>
 
     <div id = 'imageUpload'>
         <label for="imgInput">Choose an Image</label>
-        <input type = "file" id = "imgInput" accept = "image/*" onchange="showImgForm('local')">
+        <input type = "file" id = "imgInput" accept = "image/*" onchange="showImgForm('local', '')">
     </div>
-    <button style="display:none" id = "uploadLocalPhoto" onclick="getFile()">Upload Local Image</button>
+    <button style="display:none" id = "uploadLocalPhoto" onclick="getFile('')">Upload Local Image</button>
     <div id="database_images" style="display:block">
 
         <label for="imageTitle">Search for Image by Author:</label><br>
         <input type="text" id="authorSearch">
-        <button id="authorSearchInput" onclick="displayDBImages()">Find Image</button>
+        <button id="authorSearchInput" onclick="displayDBImages('')">Find Image</button>
         <table id="image_table">
             <tr>
                 <th>Image</th>
@@ -130,9 +130,50 @@
     <div id = "newImage">
         <form onsubmit="return false">
             <label for="image"> Image URL: </label>
-            <input type="text" id="url" name="url">
+            <input type="text" id="image_urlRoom" name="url">
             <button id="new_image" onclick="newImage()">Go to new image</button>
         </form>
+        <div id="photoCaptureRoom">
+            <div id='cameraSelectRoom'>
+                <select id="cameraOptionsRoom" onload="selectCamera('Room')"></select>
+                <button id="sourceSelectRoom" onclick="sourceSelect('Room')">Start Camera</button>
+            </div>
+            <video id='videoRoom' autoplay></video>
+            <img src=''>
+            <canvas id="streamCanvasRoom" style="display:none;"></canvas>
+            <button id="takePhotoRoom">Take Photo</button>
+
+            <div id='imageFormRoom' style="display:none;">
+                <label for="imageTitleRoom">Image Title:</label><br>
+                <input type="text" id="imageTitleRoom" maxlength="50"></input><br>
+                <label for="imageDescRoom">Image Description:</label><br>
+                <textarea id="imageDescRoom" rows="4" cols="50" maxlength="200"></textarea><br>
+                <label for="imageAuthorRoom">Author:</label><br>
+                <input type="text" id="imageAuthorRoom" maxlength="50"></input><br>
+            </div>
+            <button id="uploadCapturePhotoRoom" onclick="sendImage('Room')" style="display:none">Upload Screenshot</button>
+        </div>
+
+        <div id = 'imageUploadRoom'>
+            <label for="imgInputRoom">Choose an Image</label>
+            <input type = "file" id = "imgInputRoom" accept = "image/*" onchange="showImgForm('local', 'Room')">
+        </div>
+        <button style="display:none" id = "uploadLocalPhotoRoom" onclick="getFile('Room')">Upload Local Image</button>
+        <div id="database_imagesRoom" style="display:block">
+
+            <label for="imageTitleRoom">Search for Image by Author:</label><br>
+            <input type="text" id="authorSearchRoom">
+            <button id="authorSearchInputRoom" onclick="displayDBImages('Room')">Find Image</button>
+            <table id="image_tableRoom">
+                <tr>
+                    <th>Image</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Author</th>
+                    <th>Choose Image</th>
+                </tr>
+            </table>
+        </div>
     </div>
 </div>
 </body>

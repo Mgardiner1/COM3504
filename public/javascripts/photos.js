@@ -18,7 +18,7 @@ async function prepareVideo(camid) {
             //await sleep(1000);
 
             // display the stream
-            gotStream(mediaStream);
+            gotStream(mediaStream, location);
         })
         .catch( function (e) {
             alert('Not supported on this device. Update your browser: ' + e.name);
@@ -26,16 +26,16 @@ async function prepareVideo(camid) {
 }
 
 // displays the stream and waits for user to take photo
-function gotStream(stream) {
+function gotStream(stream, location) {
     // create mediaElement on video tag and display stream
-    let mediaElement = document.getElementById('video');
+    let mediaElement = document.getElementById('video'+location);
     mediaElement.style.display = 'block';
     mediaElement.srcObject = stream;
     // listen for #takePhoto button and run snapshot callback when pressed
-    var button = document.getElementById('takePhoto');
+    var button = document.getElementById('takePhoto'+location);
     button.addEventListener('click', snapshot, false);
     // create canvas to display the stream in
-    var canvas = document.getElementById('streamCanvas');
+    var canvas = document.getElementById('streamCanvas'+location);
     canvas.height = 270;
     canvas.width = 480;
     var ctx = canvas.getContext('2d');
@@ -56,9 +56,9 @@ function gotStream(stream) {
         // hide mediaStream
         mediaElement.style.display = 'none';
         // reset camera options
-        document.getElementById('cameraSelect').style.display = 'block';
-        showImgForm('captured');
-        document.getElementById('takePhoto').style.display = 'none';
+        document.getElementById('cameraSelect'+location).style.display = 'block';
+        showImgForm('captured', location);
+        document.getElementById('takePhoto'+location).style.display = 'none';
         // stop the mediaStream
         await stopCamera(stream);
     }
@@ -71,7 +71,7 @@ async function stopCamera(stream) {
 }
 
 // gets all possible video sources and displays them in a dropdown menu
-async function selectCamera() {
+async function selectCamera(location) {
     cameraNames=[];
     cameras = [];
     // get media sources
@@ -86,7 +86,7 @@ async function selectCamera() {
                 cameraNames.push(text);
                 cameras.push(sourceInfo.deviceId);
                 // add to dropdown menu
-                document.getElementById('cameraOptions').innerHTML = "<option value=" + sourceInfo.deviceId + ">" + text + "</option>";
+                document.getElementById('cameraOptions'+location).innerHTML = "<option value=" + sourceInfo.deviceId + ">" + text + "</option>";
             } else if (sourceInfo.kind === 'audioinput') {
                 audioSource = sourceInfo.deviceId;
             }
@@ -98,71 +98,72 @@ async function selectCamera() {
 }
 
 // takes selected source and initiates stream process
-async function sourceSelect() {
+async function sourceSelect(location) {
     // get the selected dropdown menu item
-    let sourceList = document.getElementById("cameraOptions");
+    let sourceList = document.getElementById("cameraOptions"+location);
     let source = sourceList.options[sourceList.selectedIndex].value;
     // starts video
-    await prepareVideo(source);
+    await prepareVideo(source, location);
     // hides dropdown menu and adds screenshot button
-    document.getElementById('cameraSelect').style.display = 'none';
-    hideImgForm('captured');
+    document.getElementById('cameraSelect'+location).style.display = 'none';
+    hideImgForm('captured', location);
     document.getElementById('takePhoto').style.display = 'block';
 }
 
 // functions to show and hide and image attribute input form
-function showImgForm(type) {
+function showImgForm(type, location) {
     // if it is an image capture
     if (type == "captured") {
         // hide the local image attribute form it displayed
-        hideImgForm('local');
+        hideImgForm('local', location);
         // show the captured image upload button
-        document.getElementById('uploadCapturePhoto').style.display = 'block';
+        document.getElementById('uploadCapturePhoto'+location).style.display = 'block';
     } else {
         // hide the caputured image form if it is displayed
-        hideImgForm('captured');
+        hideImgForm('captured', location);
         // show the local image upload button
-        document.getElementById('uploadLocalPhoto').style.display = 'block'
+        document.getElementById('uploadLocalPhoto'+location).style.display = 'block'
     }
     // show the rest of the form
-    document.getElementById('imageForm').style.display = 'block';
+    document.getElementById('imageForm'+location).style.display = 'block';
 }
 
-function hideImgForm(type) {
+function hideImgForm(type, location) {
     // if it is an image capture
     if (type == "captured") {
         // hide any displayed image
         document.querySelector('img').src = "";
         // hide the upload button for image capture
-        document.getElementById('uploadCapturePhoto').style.display = 'none';
+        document.getElementById('uploadCapturePhoto'+location).style.display = 'none';
     // if it is a local upload
     } else if (type=="local") {
 
         // hide the local upload image button
-        document.getElementById('uploadLocalPhoto').style.display = 'none';
+        document.getElementById('uploadLocalPhoto'+location).style.display = 'none';
     }
 
     // hide the image attribute form
-    document.getElementById('imageForm').style.display = 'none';
+    document.getElementById('imageForm'+location).style.display = 'none';
 }
 
 // function to read the image attribute form
-function readImgForm() {
+function readImgForm(location) {
     // get all of the paramaters and store in variable data
     var data = {
-        title: document.getElementById('imageTitle').value,
-        description: document.getElementById('imageDesc').value,
-        author: document.getElementById('imageAuthor').value
+        title: document.getElementById('imageTitle'+location).value,
+        description: document.getElementById('imageDesc'+location).value,
+        author: document.getElementById('imageAuthor'+location).value
     };
 
     return data;
 }
+
 // function to send an image to MongoDB
-async function sendImage() {
+async function sendImage(location) {
     // get the image stream canvas at the current time
-    var canvas = document.getElementById('streamCanvas');
+    var canvas = document.getElementById('streamCanvas'+location);
     // capture data from the stream and input boxes
-    var dataForm = readImgForm();
+    var dataForm = readImgForm(location);
 
     dataForm.image_blob = canvas.toDataURL('image/png');
 
@@ -172,25 +173,26 @@ async function sendImage() {
     event.preventDefault();
 }
 
-async function clearImageResults() {
+
+async function clearImageResults(location) {
     // find any current images
-    var rows = document.getElementsByClassName('image_table');
+    var rows = document.getElementsByClassName('image_table'+location);
 
     // remove them one by one leaving the table headers
     for (i=0; i<rows.length; i++) {
         rows[i].parentElement.remove();
     }
 }
-async function displayDBImages() {
+async function displayDBImages(location) {
     // get the value of the authorSearch text input
     var data = JSON.stringify({
-        author: document.getElementById('authorSearch').value
+        author: document.getElementById('authorSearch'+location).value
     });
 
     // clear previous results if any
-    await clearImageResults();
+    await clearImageResults(location);
     // query the server with that author
-    await getImageAJAX("/get_image", data);
+    await getImageAJAX("/get_image", data, location);
 
 }
 
@@ -216,7 +218,7 @@ async function sendImageAJAX(url, data) {
 
 // function to receive images using AJAX
 // takes a url & author data as input
-async function getImageAJAX(url, data) {
+async function getImageAJAX(url, data, location) {
     $.ajax({
         // set params
         url: url,
@@ -227,8 +229,8 @@ async function getImageAJAX(url, data) {
             // check if image(s) exist
             if (dataR.length > 0) {
                 // find table
-                var table = document.getElementById('image_table');
-                const tableClass = 'image_table';
+                var table = document.getElementById('image_table'+location);
+                const tableClass = room;
                 // insert image properties into table
                 for (i =0; i < dataR.length; i++) {
                     // create a new row of class tableClass
@@ -258,9 +260,9 @@ async function getImageAJAX(url, data) {
                     // create the onclick function
                     button.onclick = function() {
                         // set the url of the room form to be the base64 image blob
-                        document.getElementById('image_url').value = url;
+                        document.getElementById('image_url'+location).value = url;
                         // clear the results to tidy up the page
-                        clearImageResults();
+                        clearImageResults(location);
 
                     }
 
