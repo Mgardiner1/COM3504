@@ -71,8 +71,10 @@ async function connectToRoom() {
     let image_url = document.getElementById('image_url').value;
 
     if (name && roomNo && image_url) {
+
         if(image_url.substring(0,4) == "data"){
             imageBase = image_url;
+            checkNextPrevious(image_url);
             socket.emit('create or join', roomNo, name);
             initCanvas(socket, imageBase, "");
             hideLoginInterface(roomNo, name);
@@ -98,11 +100,12 @@ function sendURL(data, nextRoom, oldImage) {
         type: 'POST',
         data: data,
 
-        success: function (dataR) {
+        success: async function (dataR) {
             imageBase = dataR;
-            if(nextRoom){
-
+            if (nextRoom) {
+                await storeOther("image", [image_url, "next"], imageBase, roomNo);
             }
+            checkNextPrevious(dataR);
             socket.emit('create or join', roomNo, name);
             initCanvas(socket, imageUrl, oldImage);
             hideLoginInterface(roomNo, name);
@@ -123,9 +126,11 @@ async function newImage(){
 
     if(image_url){
         recreateCanvas();
+
         await storeOther("image", [image_url, "next"], imageBase, roomNo);
         if(image_url.substring(0,4) == "data"){
             imageBase = image_url;
+            checkNextPrevious(image_url);
             socket.emit('create or join', roomNo, name);
             initCanvas(socket, imageBase, oldImage);
             hideLoginInterface(roomNo, name);
@@ -137,6 +142,18 @@ async function newImage(){
             await sendURL(data, true, oldImage)
         }
     }
+}
+
+function checkNextPrevious(image){
+
+    let values = nextPreviousIndexed(image, roomNo)
+
+    document.getElementById("nextRoom").style.visibility = values[0];
+    document.getElementById("previousRoom").style.visibility = values[1];
+
+
+
+
 }
 
 function recreateCanvas(){

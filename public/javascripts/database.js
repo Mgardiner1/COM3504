@@ -52,6 +52,10 @@ async function addData(data) {
                 let annotations = obj.annotations;
                 let chat = obj.chat;
                 let knowledge = obj.knowledge;
+                let prev = obj.previousRoom;
+                let next = obj.nextRoom;
+                data.nextRoom = next;
+                data.previousRoom = prev;
 
                 await store.put(data);
                 for(let i = 0; i < annotations.length; i++){
@@ -162,6 +166,35 @@ window.clearAnnotations = clearAnnotations;
  * @param image The base64 representation of the image
  * @param room The room number
  */
+
+async function nextPreviousIndexed(image, room) {
+    if (!db)
+        await initDatabase();
+    if (db) {
+        try{
+            let tx = await db.transaction(STORE_NAME, 'readwrite');
+            let store = await tx.objectStore(STORE_NAME);
+
+            let obj = await search("room", image, room, store);
+            let next = "hidden";
+            let prev = "hidden";
+            if(obj.nextImage !== ""){
+                next = "visible";
+            }
+            if(obj.previousImage !== ""){
+                prev = "visible";
+            }
+            await tx.done;
+            return [next, prev];
+
+        } catch(error) {
+            console.log(error);
+            //localStorage.setItem(data.image + "-"+data.room, JSON.stringify());
+        };
+    }
+    //else localStorage.setItem(data.image + "-"+data.room, JSON.stringify());
+}
+window.nextPreviousIndexed = nextPreviousIndexed;
 
 async function getKnowledge(image, room) {
     if (!db)
