@@ -33,7 +33,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/title"
+                "$ref": "#/components/schemas/author"
               }
             }
           },
@@ -110,6 +110,61 @@
           }
         }
       }
+    },
+    "/get_image_url": {
+      "post": {
+        "tags": [
+          "Get Image Base64"
+        ],
+        "description": "Returns Base64 representation of an image from a valid url",
+        "operationId": "get_image_url",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/imageUrl"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Retrieved Base64 image representation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/base64Image"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No data sent!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "message": "No image url sent to the server",
+                  "internal_code": "incorrect_parameter"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error retrieving the image base64 representation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -132,6 +187,15 @@
       "image_blob": {
         "type": "string",
         "description": "A Blob containing the image"
+      },
+      "imageUrl": {
+        "type": "string",
+        "description": "A string containing a valid url to an image",
+        "example": "www.linktosomewhere.co.uk/this/is/an/image.png"
+      },
+      "base64Image": {
+        "type": "string",
+        "description": "A string containing the base64 representation of an image"
       },
       "Image": {
         "type": "object",

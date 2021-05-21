@@ -19,16 +19,24 @@ router.post('/upload_image', image.insert);
 router.post('/get_image_url', function (req, res, next) {
 
     let img = req.body.urlImage; // whatever we receive from the browser
-    let b ;
-    fetch(img)
-        .then(response => response.buffer())
-        .then(buffer => {
-            // Then create a local URL for that image and print it
-            b = "data:image/jpeg;base64,"+buffer.toString('base64');
-            console.log(b);
-            res.setHeader('Content-Type', 'application/json');
-            res.json(b);
-        })
+    if (img == null) {
+        res.status(403).send('No data sent!')
+    }
+    try {
+        let b ;
+        fetch(img)
+            .then(response => response.buffer())
+            .then(buffer => {
+                // Then create a base64 string
+                b = "data:image/jpeg;base64,"+buffer.toString('base64');
+                console.log(b);
+                res.setHeader('Content-Type', 'application/json');
+                res.json(b);
+            })
+    } catch (e) {
+        res.status(500).send('error getting image base64 representation'+ e);
+    }
+
 });
 
 module.exports = router;
