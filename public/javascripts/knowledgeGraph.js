@@ -57,15 +57,15 @@ async function selectItem(event){
     await createPanel(row.id, row.name, row.rc, row.qc, color)
     // Display to other users - send information other users
     room = document.getElementById('roomNo').value;
-    await storeOther('knowledge', row, imageBase, roomNo);
+
     //Sends knowledge data to other users
     socket.emit('knowledge', room, row.id, row.name, row.rc, row.qc, color);
+    await storeOther('knowledge', row, imageBase, roomNo);
 }
 
 //Receives knowledge data for other users bar sender and displays in view
 socket.on('knowledge_display', function (id, name, rc, qc, color) {
      createPanel(id, name, rc, qc, color)
-         .then(r => {})
 });
 
 /**
