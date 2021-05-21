@@ -74,16 +74,14 @@ async function connectToRoom() {
 
         if(image_url.substring(0,4) == "data"){
             imageBase = image_url;
-            checkNextPrevious(image_url);
             socket.emit('create or join', roomNo, name);
             initCanvas(socket, imageBase, "");
             hideLoginInterface(roomNo, name);
-
         }
         else {
             imageUrl = image_url;
             let data = JSON.stringify({urlImage: image_url});
-            await sendURL(data, false, "");
+            await sendURL(data, false, "", false);
         }
 
     } else {
@@ -91,7 +89,7 @@ async function connectToRoom() {
     }
 }
 
-function sendURL(data, nextRoom, oldImage) {
+function sendURL(data, nextRoom, oldImage, moving) {
     $.ajax({
         // set params
         url: '/get_image_url',
@@ -102,14 +100,12 @@ function sendURL(data, nextRoom, oldImage) {
 
         success: async function (dataR) {
             imageBase = dataR;
-            if (nextRoom) {
-                await storeOther("image", [image_url, "next"], imageBase, roomNo);
+            if (nextRoom && !moving) {
+                await storeOther("image", [imageBase, "next"], oldImage, roomNo);
             }
-            checkNextPrevious(dataR);
             socket.emit('create or join', roomNo, name);
-            initCanvas(socket, imageUrl, oldImage);
+            initCanvas(socket, imageUrl, oldImage, moving);
             hideLoginInterface(roomNo, name);
-
         },
         // catch errors
         error: function (err) {
@@ -126,33 +122,28 @@ async function newImage(){
 
     if(image_url){
         recreateCanvas();
-
+        removeChat();
+        document.getElementById("image_urlRoom").value = ""
         await storeOther("image", [image_url, "next"], imageBase, roomNo);
         if(image_url.substring(0,4) == "data"){
             imageBase = image_url;
-            checkNextPrevious(image_url);
+
             socket.emit('create or join', roomNo, name);
-            initCanvas(socket, imageBase, oldImage);
+            await initCanvas(socket, imageBase, oldImage);
             hideLoginInterface(roomNo, name);
         }
         else {
-            imageBase = image_url;
-            document.getElementById("image_urlRoom").value = ""
-            let data = JSON.stringify({urlImage: imageUrl});
-            await sendURL(data, true, oldImage)
+            let data = JSON.stringify({urlImage: image_url});
+            await sendURL(data, true, oldImage, false)
         }
     }
 }
 
-function checkNextPrevious(image){
+async function checkNextPrevious(image){
 
-    let values = nextPreviousIndexed(image, roomNo)
-
-    document.getElementById("nextRoom").style.visibility = values[0];
-    document.getElementById("previousRoom").style.visibility = values[1];
-
-
-
+    let values = await nextPreviousIndexed(image, roomNo)
+    document.getElementById("nextRoom").hidden = values[0];
+    document.getElementById("previousRoom").hidden = values[1];
 
 }
 
@@ -173,6 +164,9 @@ function recreateCanvas(){
     newElement = document.createElement("canvas");
     newElement.id = "canvas"
     canvasDiv.appendChild(newElement);
+
+    document.getElementById("nextRoom").hidden = true;
+    document.getElementById("previousRoom").hidden = true;
 }
 
 /**
@@ -230,6 +224,25 @@ function initChatSocket() {
     });
 
 }
+
+async function nextPreviousImage(whichRoom){
+
+    let img = await getNextPreviousImage(whichRoom, imageBase, roomNo)
+    imageBase = img;
+    recreateCanvas();
+    removeChat();
+    socket.emit('create or join', roomNo, name);
+    initCanvas(socket, imageBase, "", true);
+
+}
+
+function removeChat(){
+    let chatDiv = document.getElementById("history");
+    while (chatDiv.firstChild) {
+        chatDiv.removeChild(chatDiv.lastChild);
+    }
+}
+
 
 /////////////////////////////////////////////////////////////////
 

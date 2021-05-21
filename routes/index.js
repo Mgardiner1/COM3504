@@ -24,7 +24,7 @@ router.post('/get_image_url', function (req, res, next) {
         .then(response => response.buffer())
         .then(buffer => {
             // Then create a local URL for that image and print it
-            b = buffer.toString('base64');
+            b = "data:image/jpeg;base64,"+buffer.toString('base64');
             console.log(b);
             res.setHeader('Content-Type', 'application/json');
             res.json(b);

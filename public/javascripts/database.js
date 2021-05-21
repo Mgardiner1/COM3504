@@ -52,10 +52,16 @@ async function addData(data) {
                 let annotations = obj.annotations;
                 let chat = obj.chat;
                 let knowledge = obj.knowledge;
-                let prev = obj.previousRoom;
-                let next = obj.nextRoom;
-                data.nextRoom = next;
-                data.previousRoom = prev;
+                let prev = obj.previousImage;
+                let next = obj.nextImage;
+
+                if(next) {
+                    data.nextImage = next;
+                }
+                if(prev) {
+                    data.previousImage = prev;
+                }
+
 
                 await store.put(data);
                 for(let i = 0; i < annotations.length; i++){
@@ -102,7 +108,6 @@ async function storeOther(name, data, image, room) {
             let tx = await db.transaction(STORE_NAME, 'readwrite');
             let store = await tx.objectStore(STORE_NAME);
             let obj = await search(name, image, room, store);
-            console.log(obj);
             if(obj){
                 if(name === 'annotations') {
                     obj.annotations.push(data);
@@ -115,10 +120,10 @@ async function storeOther(name, data, image, room) {
                 }
                 else if(data.length == 2){
                     if(data[1] === "next"){
-                        obj.nextRoom = data[0];
+                        obj.nextImage = data[0];
                     }
                     else{
-                        obj.previousRoom = data[0];
+                        obj.previousImage = data[0];
                     }
                 }
                 await store.put(obj);
@@ -176,13 +181,14 @@ async function nextPreviousIndexed(image, room) {
             let store = await tx.objectStore(STORE_NAME);
 
             let obj = await search("room", image, room, store);
-            let next = "hidden";
-            let prev = "hidden";
-            if(obj.nextImage !== ""){
-                next = "visible";
+            let next = true;
+            let prev = true;
+
+            if(obj.nextImage){
+                next = false;
             }
-            if(obj.previousImage !== ""){
-                prev = "visible";
+            if(obj.previousImage){
+                prev = false;
             }
             await tx.done;
             return [next, prev];
@@ -216,6 +222,33 @@ async function getKnowledge(image, room) {
     //else localStorage.setItem(data.image + "-"+data.room, JSON.stringify());
 }
 window.getKnowledge= getKnowledge;
+
+async function getNextPreviousImage(nextPrevImg, image, room) {
+    if (!db)
+        await initDatabase();
+    if (db) {
+        try{
+            let tx = await db.transaction(STORE_NAME, 'readwrite');
+            let store = await tx.objectStore(STORE_NAME);
+            let obj = await search("image", image, room, store);
+            console.log(obj);
+            await tx.done;
+
+            if(nextPrevImg){
+                return obj.previousImage
+            }
+            return obj.nextImage;
+
+
+        } catch(error) {
+            console.log(error);
+            //localStorage.setItem(data.image + "-"+data.room, JSON.stringify());
+        };
+    }
+    //else localStorage.setItem(data.image + "-"+data.room, JSON.stringify());
+}
+window.getNextPreviousImage = getNextPreviousImage;
+
 /**
  * Search to see if a particular image/room combination exists within IndexedDb
  * @param name Name of the index being used to search

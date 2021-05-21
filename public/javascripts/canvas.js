@@ -17,7 +17,7 @@ let cvx;
  * @param sckt the open socket to register events on
  * @param imageUrl teh image url to download
  */
-function initCanvas(sckt, imageUrl, oldImage) {
+async function initCanvas(sckt, imageUrl, oldImage) {
     socket = sckt;
     userId = document.getElementById('who_you_are').value; // this isn't working for some reason
     room = document.getElementById('roomNo').value;
@@ -81,7 +81,7 @@ function initCanvas(sckt, imageUrl, oldImage) {
     });
 
     // capture the event on the socket when someone else is drawing on their canvas (socket.on...)
-    socket.on('pic_display', function ( room, width, height, x1, y1, x2, y2, color, thickness) {
+    socket.on('pic_display', function (room, width, height, x1, y1, x2, y2, color, thickness) {
         //document.getElementById('who_you_are').innerHTML= "Third test";
         drawOnCanvas(imageBase, ctx, width, height, x1, y1, x2, y2, color, thickness)
     });
@@ -91,33 +91,35 @@ function initCanvas(sckt, imageUrl, oldImage) {
     img.addEventListener('load', () => {
         // it takes time before the image size is computed and made available
         // here we wait until the height is set, then we resize the canvas based on the size of the image
-        let poll = setInterval(function () {
+        let poll = setInterval(async function () {
             if (img.naturalHeight) {
                 clearInterval(poll);
                 // resize the canvas
-                let ratioX=1;
-                let ratioY=1;
+                let ratioX = 1;
+                let ratioY = 1;
                 // if the screen is smaller than the img size we have to reduce the image to fit
-                if (img.clientWidth>window.innerWidth)
-                    ratioX=window.innerWidth/img.clientWidth;
-                if (img.clientHeight> window.innerHeight)
-                    ratioY= img.clientHeight/window.innerHeight;
-                let ratio= Math.min(ratioX, ratioY);
+                if (img.clientWidth > window.innerWidth)
+                    ratioX = window.innerWidth / img.clientWidth;
+                if (img.clientHeight > window.innerHeight)
+                    ratioY = img.clientHeight / window.innerHeight;
+                let ratio = Math.min(ratioX, ratioY);
                 // resize the canvas to fit the screen and the image
-                cvx.width = canvas.width = img.clientWidth*ratio;
-                cvx.height = canvas.height = img.clientHeight*ratio;
+                cvx.width = canvas.width = img.clientWidth * ratio;
+                cvx.height = canvas.height = img.clientHeight * ratio;
                 // draw the image onto the canvas
                 drawImageScaled(img, cvx, ctx);
                 // hide the image element as it is not needed
                 img.style.display = 'none';
-                addData({  'image': imageBase,
-                                'room': document.getElementById('roomNo').value,
-                                'annotations': [],
-                                'chat': [],
-                                'knowledge': [],
-                                'previousRoom': oldImage,
-                                'nextRoom': ""
+                await addData({
+                    'image': imageBase,
+                    'room': document.getElementById('roomNo').value,
+                    'annotations': [],
+                    'chat': [],
+                    'knowledge': [],
+                    'previousImage': oldImage,
+                    'nextImage': ""
                 });
+                await checkNextPrevious(imageBase);
 
             }
         }, 10);
@@ -141,13 +143,7 @@ function resetCanvas(){
  * @param ctx
  */
 function drawImageScaled(img, canvas, ctx) {
-    // get the scale
-    console.log(canvas.width);
-    console.log(canvas.height);
-    console.log(img.width);
-    console.log(img.height);
     let scale = Math.min(canvas.width / img.width, canvas.height / img.height);
-    console.log(scale);
     // get the top left position of the image
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     let x = (canvas.width / 2) - (img.width / 2) * scale;
@@ -172,7 +168,7 @@ function drawImageScaled(img, canvas, ctx) {
  * @param color of the line
  * @param thickness of the line
  */
-function drawOnCanvas(image, ctx, canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness, dashed=false) {
+async function drawOnCanvas(image, ctx, canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness, dashed=false) {
 
     //get the ration between the current canvas and the one it has been used to draw on the other comuter
     let ratioX= cvx.width/canvasWidth;
@@ -195,7 +191,7 @@ function drawOnCanvas(image, ctx, canvasWidth, canvasHeight, prevX, prevY, currX
     ctx.closePath();
 
     let data = [canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness];
-    storeOther('annotations', data, image, roomNo);
+    await storeOther('annotations', data, image, roomNo);
 }
 /*
 async function imgResize(img, cvx, ctx, canvas) {
