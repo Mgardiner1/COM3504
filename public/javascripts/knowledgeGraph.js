@@ -39,8 +39,8 @@ function widgetInit(){
 
 /**
  * receives the JSON-LD of the selected Knowledge Graph Item
- * @TODO write the JSON-LD to IndexDB for later display
- * @TODO write the JSON-LD to socket.io for display to other users
+ * JSON-LD to IndexDB for later display
+ * JSON-LD to socket.io for display to other users
  */
 async function selectItem(event){
     console.log(event);
@@ -58,10 +58,11 @@ async function selectItem(event){
     // Display to other users - send information other users
     room = document.getElementById('roomNo').value;
     await storeOther('knowledge', row, imageBase, roomNo);
+    //Sends knowledge data to other users
     socket.emit('knowledge', room, row.id, row.name, row.rc, row.qc, color);
 }
 
-
+//Receives knowledge data for other users bar sender and displays in view
 socket.on('knowledge_display', function (id, name, rc, qc, color) {
      createPanel(id, name, rc, qc, color)
          .then(r => {})
@@ -109,6 +110,7 @@ function queryMainEntity(id, type){
     });
 }
 
+// Displays knowledge panels and form when user clicks 'Turn on Knowledge Annotation'
 async function knowledgeOn() {
     document.getElementById('knowledgeForm').style.display = 'block';
     document.getElementById('knowledgePanel').style.display = 'block';
@@ -116,6 +118,7 @@ async function knowledgeOn() {
     document.getElementById('knowledgeOff').style.display = 'block';
 }
 
+// Removes knowledge form when user clicks 'Turn off Knowledge Annotation'
 async function knowledgeOff() {
     document.getElementById('knowledgeForm').style.display = 'none';
     document.getElementById('knowledgeOn').style.display = 'block';

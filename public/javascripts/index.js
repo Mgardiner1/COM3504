@@ -28,17 +28,13 @@ function init() {
         console.log('This browser doesn\'t support IndexedDB');
     }
 
-
+    // Registers service worker to store files in cache
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker
             .register('./service-worker.js')
             .then(function() { console.log('Service Worker Registered'); });
     }
-
-
-    //loadData(false);
 }
-
 
 /**
  * called to generate a random room number
@@ -65,20 +61,21 @@ function sendChatText() {
  * interface
  */
 async function connectToRoom() {
-
     roomNo = document.getElementById('roomNo').value;
     name = document.getElementById('name').value;
     let image_url = document.getElementById('image_url').value;
 
+    //Checks if parameters are defined
     if (name && roomNo && image_url) {
-
         if(image_url.substring(0,4) == "data"){
+            //connects to (new) room
             imageBase = image_url;
             socket.emit('create or join', roomNo, name);
             initCanvas(socket, imageBase, "");
             hideLoginInterface(roomNo, name);
         }
         else {
+            //stores data sent into idb
             imageUrl = image_url;
             let data = JSON.stringify({urlImage: image_url});
             await sendURL(data, false, "", false);
@@ -89,6 +86,14 @@ async function connectToRoom() {
     }
 }
 
+/**
+ * called when the Send button is pressed. It gets the URL to send from the interface
+ * and sends the user to room if successful
+ *  * @param data the URL data
+ *  * @param nextRoom the next room the user wants to enter
+ *  * @param oldImage the old image the user was looking at
+ *  * @param moving boolean, true if the user is trying to move rooms
+ */
 function sendURL(data, nextRoom, oldImage, moving) {
     $.ajax({
         // set params
@@ -99,6 +104,7 @@ function sendURL(data, nextRoom, oldImage, moving) {
         data: data,
 
         success: async function (dataR) {
+            // URL accepted, sent to new room with image
             imageBase = dataR;
             if (nextRoom && !moving) {
                 await storeOther("image", [imageBase, "next"], oldImage, roomNo);
@@ -109,13 +115,16 @@ function sendURL(data, nextRoom, oldImage, moving) {
         },
         // catch errors
         error: function (err) {
+            // URL not accepted/ not worked, displays error
             alert('Error with AJAX: ' + err.status + ':' + err.statusText);
 
         }
     });
 }
 
-
+/**
+ * Called when the user adds a new image to the room. Adds new image to the room.
+ */
 async function newImage(){
     let image_url = document.getElementById('image_urlRoom').value;
     let oldImage = imageBase;
@@ -140,6 +149,9 @@ async function newImage(){
     }
 }
 
+/**
+ * Called when checking the previous links
+ */
 async function checkNextPrevious(image){
 
     let values = await nextPreviousIndexed(image, roomNo)
@@ -148,6 +160,9 @@ async function checkNextPrevious(image){
 
 }
 
+/**
+ * Called when recreating the canvas when a new room is made
+ */
 function recreateCanvas(){
     // Remove the canvas and image elements
 
@@ -225,7 +240,9 @@ function initChatSocket() {
     });
 
 }
-
+/**
+ * Called when traversing to next image
+ */
 async function nextPreviousImage(whichRoom){
 
     let img = await getNextPreviousImage(whichRoom, imageBase, roomNo)
@@ -238,6 +255,9 @@ async function nextPreviousImage(whichRoom){
 
 }
 
+/**
+ * Called from nextPreviousImage. Removes all the current chat from view
+ */
 function removeChat(){
     let chatDiv = document.getElementById("history");
     while (chatDiv.firstChild) {
@@ -245,6 +265,9 @@ function removeChat(){
     }
 }
 
+/**
+ * Called from nextPreviousImage. Removes all current knowledge graph elements from view
+ */
 function removeKnowledgeGraph(){
     let panels = document.getElementById('resultPanels');
     while (panels.firstChild) {
@@ -257,7 +280,7 @@ function removeKnowledgeGraph(){
 
 /**
  * it appends the given html text to the history div
- * @param text: teh text to append
+ * @param text: the text to append
  */
 /*
 function writeOnChatHistory(text) {
