@@ -123,6 +123,7 @@ async function newImage(){
     if(image_url){
         recreateCanvas();
         removeChat();
+        removeKnowledgeGraph();
         document.getElementById("image_urlRoom").value = ""
         await storeOther("image", [image_url, "next"], imageBase, roomNo);
         if(image_url.substring(0,4) == "data"){
@@ -231,6 +232,7 @@ async function nextPreviousImage(whichRoom){
     imageBase = img;
     recreateCanvas();
     removeChat();
+    removeKnowledgeGraph();
     socket.emit('create or join', roomNo, name);
     initCanvas(socket, imageBase, "", true);
 
@@ -240,6 +242,13 @@ function removeChat(){
     let chatDiv = document.getElementById("history");
     while (chatDiv.firstChild) {
         chatDiv.removeChild(chatDiv.lastChild);
+    }
+}
+
+function removeKnowledgeGraph(){
+    let panels = document.getElementById('resultPanels');
+    while (panels.firstChild) {
+        panels.removeChild(panels.lastChild);
     }
 }
 
