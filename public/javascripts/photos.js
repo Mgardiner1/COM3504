@@ -1,3 +1,9 @@
+/**
+ * it prepares the video using a media input
+ * @param camid: the id of the camera to be used
+ * @param location: in a room or not
+ * @returns {Promise<void>}
+ */
 async function prepareVideo(camid, location) {
     // set session variables
     var session = {
@@ -26,8 +32,12 @@ async function prepareVideo(camid, location) {
         });
 }
 
-// displays the stream and waits for user to take photo
-function gotStream(stream, location) {
+/**
+ * it displays the stream and waits for user to take photo
+ * @param stream
+ * @param location
+ */
+async function gotStream(stream, location) {
     // create mediaElement on video tag and display stream
     let mediaElement = document.getElementById('video'+location);
     console.log('video'+location);
@@ -41,7 +51,11 @@ function gotStream(stream, location) {
     canvas.height = 270;
     canvas.width = 480;
     var ctx = canvas.getContext('2d');
-    // call back function to take snapshot of stream canvas
+
+    /**
+     * callback function to take a snapshot of the stream
+     * @returns {Promise<void>}
+     */
     async function snapshot() {
         // set scale
         let screenShotScale = Math.min(canvas.width / 480, canvas.height / 270);
@@ -52,11 +66,14 @@ function gotStream(stream, location) {
         // take snapshot
         await ctx.drawImage(mediaElement, x, y, 480 * screenShotScale, 270 * screenShotScale);
         // display snapshot
+        // check if we are in a room
         if (location == 'Room') {
+            // set url and display image
             document.getElementById('image_urlRoom').value = canvas.toDataURL('image/png');
             document.getElementById('imgRoom').src = canvas.toDataURL('image/png');
         }
         else {
+            // display image
             document.querySelector('img').src = canvas.toDataURL('image/png');
         }
 
@@ -66,20 +83,29 @@ function gotStream(stream, location) {
         mediaElement.style.display = 'none';
         // reset camera options
         document.getElementById('cameraSelect'+location).style.display = 'block';
-        showImgForm('captured', location);
+        await showImgForm('captured', location);
         document.getElementById('takePhoto'+location).style.display = 'none';
         // stop the mediaStream
         await stopCamera(stream);
     }
 }
-// function to stop camera
+
+/**
+ * it stops all media inputs including camera
+ * @param stream
+ * @returns {Promise<void>}
+ */
 async function stopCamera(stream) {
     stream.getTracks().forEach(function(track) {
         track.stop();
     });
 }
 
-// gets all possible video sources and displays them in a dropdown menu
+/**
+ * it gets all possible video sources and displays them in a dropdown menu
+ * @param location (are we in a room or not)
+ * @returns {Promise<void>}
+ */
 async function selectCamera(location) {
     cameraNames=[];
     cameras = [];
@@ -106,7 +132,11 @@ async function selectCamera(location) {
         .then(getSources);
 }
 
-// takes selected source and initiates stream process
+/**
+ * it takes selected source and initiates stream process
+ * @param location (is it in a room?)
+ * @returns {Promise<void>}
+ */
 async function sourceSelect(location) {
     // get the selected dropdown menu item
     let sourceList = document.getElementById("cameraOptions"+location);
@@ -120,7 +150,12 @@ async function sourceSelect(location) {
 }
 
 // functions to show and hide and image attribute input form
-function showImgForm(type, location) {
+/**
+ * it shows and hides image attribute input form
+ * @param type (either captured for snapshots or local for image upload)
+ * @param location (in a room or not)
+ */
+async function showImgForm(type, location) {
     // if it is an image capture
     if (type == "captured") {
         // hide the local image attribute form it displayed
@@ -137,6 +172,11 @@ function showImgForm(type, location) {
     document.getElementById('imageForm'+location).style.display = 'block';
 }
 
+/**
+ * hides the image attribute input form
+ * @param type (either captured for snapshots or local for image upload)
+ * @param location (in a room or not)
+ */
 function hideImgForm(type, location) {
     // if it is an image capture
     if (type == "captured") {
@@ -155,7 +195,11 @@ function hideImgForm(type, location) {
     document.getElementById('imageForm'+location).style.display = 'none';
 }
 
-// function to read the image attribute form
+/**
+ * it reads the image attribute form
+ * @param location (in a room or not)
+ * @returns {{author: *, description: *, title: *}} image data
+ */
 function readImgForm(location) {
     // get all of the paramaters and store in variable data
     var data = {
@@ -167,7 +211,11 @@ function readImgForm(location) {
     return data;
 }
 
-// function to send an image to MongoDB
+/**
+ * it sends an image to MongoDB
+ * @param location (in a room or not)
+ * @returns {Promise<void>}
+ */
 async function sendImage(location) {
     // get the image stream canvas at the current time
     var canvas = document.getElementById('streamCanvas'+location);
@@ -182,7 +230,11 @@ async function sendImage(location) {
     event.preventDefault();
 }
 
-
+/**
+ * clears the results from an image search
+ * @param location (in a room or not)
+ * @returns {Promise<void>}
+ */
 async function clearImageResults(location) {
     // find any current images
     var rows = document.getElementsByClassName('image_table'+location);
@@ -192,6 +244,12 @@ async function clearImageResults(location) {
         rows[i].parentElement.remove();
     }
 }
+
+/**
+ * it displays images from a MongoDB search
+ * @param location (in a room or not)
+ * @returns {Promise<void>}
+ */
 async function displayDBImages(location) {
     // get the value of the authorSearch text input
     var data = JSON.stringify({
@@ -204,8 +262,12 @@ async function displayDBImages(location) {
     await getImageAJAX("/get_image", data, location);
 
 }
-
-// AJAX function to send images to server
+/**
+ * its sends an AJAX request to send images to the server
+ * @param url: upload route on server
+ * @param data: image data
+ * @returns {Promise<void>}
+ */
 async function sendImageAJAX(url, data) {
     $.ajax({
         // set params
@@ -225,8 +287,13 @@ async function sendImageAJAX(url, data) {
     });
 }
 
-// function to receive images using AJAX
-// takes a url & author data as input
+/**
+ * it receives images using AJAX
+ * @param url: get images route on server
+ * @param data: image data
+ * @param location: in a room or not
+ * @returns {Promise<void>}
+ */
 async function getImageAJAX(url, data, location) {
     $.ajax({
         // set params
@@ -287,25 +354,10 @@ async function getImageAJAX(url, data, location) {
     });
 }
 
+/**
+ * it sets the url in the url_image box
+ * @param url: the image url (usually in base64)
+ */
 function setURL(url) {
     document.getElementById('image_url').value = url;
 }
-/*
-
-
-
-async function initStreamCanvas() {
-    var button = document.getElementById('takePhoto');
-    var video = document.querySelector('video');
-    var canvas = document.getElementById('streamCanvas');
-    canvas.height = 600;
-    canvas.width = 600;
-    var ctx = canvas.getContext('2d');
-    console.log(ctx.canvas.width);
-    button.addEventListener('click', snapshot, false);
-    function snapshot() {
-        ctx.drawImage(video, 0, 0);
-        document.querySelector('img').src = canvas.toDataURL('image/png');
-    }
-}
-*/

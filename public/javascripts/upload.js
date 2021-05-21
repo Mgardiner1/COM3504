@@ -1,4 +1,8 @@
-// function to read uploaded file and upload it to MongoDB
+/**
+ * it reads an uploaded file and sends it to MongoDB
+ * @param location (in a room or not)
+ * @returns {Promise<void>}
+ */
 async function getFile(location) {
     // hide the previously display image attributes form
     hideImgForm('local', location);
@@ -13,10 +17,11 @@ async function getFile(location) {
         // set the URL value of the form to be the read base64 value
         urlInput.value = reader.result;
 
-        // send data to MongoDB
+        // read data from image attribute form and image blob
         let dataForm = readImgForm(location);
         dataForm.image_blob = reader.result;
 
+        // send to mongoDB via AJAX
         let data = JSON.stringify(dataForm);
         sendImageAJAX('/upload_image', data);
 

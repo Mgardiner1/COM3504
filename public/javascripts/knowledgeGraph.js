@@ -68,7 +68,15 @@ socket.on('knowledge_display', function (id, name, rc, qc, color) {
          .then(r => {})
 });
 
-// displays the JSON-LD in a panel
+/**
+ * it displays the JSON-LD in a panel
+ * @param id: the JSON-LD id
+ * @param name: the JSON-LD name
+ * @param description: the JSON-LD description
+ * @param url: the JSON-LD url
+ * @param color: the JSON-LD color
+ * @returns {Promise<void>}
+ */
 async function createPanel(id, name, description, url, color) {
     let panels = document.getElementById('resultPanels');
     let panel = document.createElement('div');
@@ -110,17 +118,27 @@ function queryMainEntity(id, type){
     });
 }
 
-// Displays knowledge panels and form when user clicks 'Turn on Knowledge Annotation'
+/**
+ * it displays knowledge panels and form when user clicks 'Turn on Knowledge Annotation'
+ * @returns {Promise<void>}
+ */
 async function knowledgeOn() {
+    // display knowledge panel
     document.getElementById('knowledgeForm').style.display = 'block';
     document.getElementById('knowledgePanel').style.display = 'block';
+    // hide this button and show the other
     document.getElementById('knowledgeOn').style.display = 'none';
     document.getElementById('knowledgeOff').style.display = 'block';
 }
 
-// Removes knowledge form when user clicks 'Turn off Knowledge Annotation'
+/**
+ * it removes knowledge form when user clicks 'Turn off Knowledge Annotation'
+ * @returns {Promise<void>}
+ */
 async function knowledgeOff() {
+    // get rid of knowledge form
     document.getElementById('knowledgeForm').style.display = 'none';
+    // show opposite button
     document.getElementById('knowledgeOn').style.display = 'block';
     document.getElementById('knowledgeOff').style.display = 'none';
 }

@@ -27,7 +27,7 @@
         "tags": [
           "Get Image"
         ],
-        "description": "Returns an image from the database based upon the name entered",
+        "description": "Returns an image from the database based upon the author entered",
         "operationId": "get_image",
         "requestBody": {
           "content": {
